@@ -2,9 +2,12 @@
 Here is a suggested outline for your proposal. You don't need to follow this
 outline, but it may help you focus your project.
 
-* Project title
-* Team members
-* Description (1 pp describing the basic idea)
+Family Game Night
+
+* Kylie Holland and Gilbert Rosgal
+
+Relive your family game nights with a rousing game of ____! Featuring a gamecube controller, exciting graphical interface, and the ability to play with a partner. 
+
 * Hardware required (itemize what hardware, if any, you need)
 * Funds requested (the amount you will want to be reimbursed, remember you have
   a $20 budget per person)
