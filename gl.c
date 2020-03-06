@@ -1,12 +1,11 @@
   
-#include "gl.h"
+#include "gl_kyl.h"
 #include "fb.h"
 #include "font.h"
 #include "malloc.h"
 #include "strings.h"
 #include "printf.h"
 #include "shell.h"
-
 
 
 void gl_init(unsigned int width, unsigned int height, gl_mode_t mode)
@@ -119,6 +118,44 @@ void gl_draw_string(int x, int y, const char* str, color_t c)
         x = original_x;
     }
      }
+}
+
+void eight_points_circle(int x_center, int y_center, int x, int y, int c){
+    //Draw a pixel in each octant
+    gl_draw_pixel(x_center + x, y_center - y, c);
+    gl_draw_pixel(x_center + x, y_center + y, c);
+    gl_draw_pixel(x_center - x, y_center - y, c);
+    gl_draw_pixel(x_center - x, y_center + y, c);
+    gl_draw_pixel(x_center + y, y_center + x, c);
+    gl_draw_pixel(x_center + y, y_center - x, c);
+    gl_draw_pixel(x_center - y, y_center + x, c);
+    gl_draw_pixel(x_center - y, y_center - x, c);
+}
+
+
+void gl_draw_circle(int x_center, int y_center, int radius, color_t c){ 
+//Use bessemer's algorithm, algorithm/basic code explained here: https://en.wikipedia.org/wiki/Midpoint_circle_algorithm, https://www.geeksforgeeks.org/bresenhams-circle-drawing-algorithm/
+int y_pos = radius;
+int x_pos = 0; 
+int decision_bessemer = 3 - 2 * radius; 
+eight_points_circle(x_center, y_center, x_pos, y_pos, c); //Draw points around the circle
+while(y_pos >= x_pos){ //Once x_pos = radius as well, the circle is complete
+    x_pos++; //Increment the x_pos before changing the y_pos
+    if(decision_bessemer > 0){
+        y_pos--; 
+       // decision_bessemer = decision_bessemer + (4 * x_pos) + 6; 
+    } else {
+       // decision_bessemer = decision_bessemer + 4 * (x_pos – y_pos) + 10; 
+        y_pos--;
+
+    }
+    eight_points_circle(x_center,y_center, x_pos,y_pos, c);
+}
+}
+
+
+void gl_draw_background(color_t platform, color_t trees){
+    gl_draw_rect(0, gl_get_height() - 100, gl_get_width(), 50, platform);
 }
 
 unsigned int gl_get_char_height(void)
