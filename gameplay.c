@@ -6,7 +6,9 @@
 #include "strings.h"
 #include "timer.h"
 #include "uart.h"
-
+#include "gpio.h"
+#include "gpioextra.h"
+#include "controller.h"
 
 #define _WIDTH 640
 #define _HEIGHT 512
@@ -65,8 +67,12 @@ void main(void)
     uart_init();
     timer_init();
     printf("Time to play!\n");
+    timer_delay(2);
+    controller_init(21);
+     //test_gl();
+    gpio_set_input(21);
 
-     test_gl();
+
 
     printf("Game over! Come back soon!\n");
     uart_putchar(EOT);

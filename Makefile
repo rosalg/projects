@@ -1,5 +1,5 @@
 APPLICATION = gameplay.bin
-MODULES = fb.o gl.o 
+MODULES = fb.o gl.o controller.o 
 
 CFLAGS = -I$(CS107E)/include -g -Wall -Og -std=c99 -ffreestanding 
 CFLAGS += -mapcs-frame -fno-omit-frame-pointer -mpoke-function-name -Wpointer-arith
@@ -11,7 +11,7 @@ all : $(MODULES) $(APPLICATION)
 %.bin: %.elf
 	arm-none-eabi-objcopy $< -O binary $@
 
-%.elf: %.o $(MY_MODULES) start.o cstart.o
+%.elf: %.o $(MODULES) start.o cstart.o
 	arm-none-eabi-gcc $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 %.o: %.c
