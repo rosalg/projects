@@ -120,42 +120,62 @@ void gl_draw_string(int x, int y, const char* str, color_t c)
      }
 }
 
-void eight_points_circle(int x_center, int y_center, int x, int y, int c){
-    //Draw a pixel in each octant
-    gl_draw_pixel(x_center + x, y_center - y, c);
-    gl_draw_pixel(x_center + x, y_center + y, c);
-    gl_draw_pixel(x_center - x, y_center - y, c);
-    gl_draw_pixel(x_center - x, y_center + y, c);
-    gl_draw_pixel(x_center + y, y_center + x, c);
-    gl_draw_pixel(x_center + y, y_center - x, c);
-    gl_draw_pixel(x_center - y, y_center + x, c);
-    gl_draw_pixel(x_center - y, y_center - x, c);
-}
 
+// Function to put pixels at points in each octant
+// //Use bessemer's algorithm, algorithm/basic code explained here: https://en.wikipedia.org/wiki/Midpoint_circle_algorithm, https://www.geeksforgeeks.org/bresenhams-circle-drawing-algorithm/
 
-void gl_draw_circle(int x_center, int y_center, int radius, color_t c){ 
-//Use bessemer's algorithm, algorithm/basic code explained here: https://en.wikipedia.org/wiki/Midpoint_circle_algorithm, https://www.geeksforgeeks.org/bresenhams-circle-drawing-algorithm/
-int y_pos = radius;
-int x_pos = 0; 
-int decision_bessemer = 3 - 2 * radius; 
-eight_points_circle(x_center, y_center, x_pos, y_pos, c); //Draw points around the circle
-while(y_pos >= x_pos){ //Once x_pos = radius as well, the circle is complete
-    x_pos++; //Increment the x_pos before changing the y_pos
-    if(decision_bessemer > 0){
-        y_pos--; 
-       // decision_bessemer = decision_bessemer + (4 * x_pos) + 6; 
-    } else {
-       // decision_bessemer = decision_bessemer + 4 * (x_pos – y_pos) + 10; 
-        y_pos--;
+void eight_points_circle(int xc, int yc, int x, int y, int c) 
+{ 
+    gl_draw_pixel(xc+x, yc+y, GL_RED); 
+    gl_draw_pixel(xc-x, yc+y, GL_RED); 
+    gl_draw_line((xc-x), (yc+y), (xc+x), (yc+y), GL_RED); //Use draw line to fill in the circle (original code)
+    gl_draw_pixel(xc+x, yc-y, GL_RED); 
+    gl_draw_pixel(xc-x, yc-y, GL_RED); 
+    gl_draw_line(xc-x, yc-y, xc+x, yc-y, GL_RED);
+    gl_draw_pixel(xc+y, yc+x, GL_RED); 
+    gl_draw_pixel(xc-y, yc+x, GL_RED); 
+    gl_draw_line(xc-y, yc+x, xc+y, yc+x, GL_RED);
+    gl_draw_pixel(xc+y, yc-x, GL_RED); 
+    gl_draw_pixel(xc-y, yc-x, GL_RED); 
+    gl_draw_line(xc-y, yc-x, xc+y, yc-x, GL_RED);
 
-    }
-    eight_points_circle(x_center,y_center, x_pos,y_pos, c);
-}
-}
+} 
+  
+// Function for circle-generation 
+// using Bresenham's algorithm 
+void gl_draw_circle(int xc, int yc, int r, color_t c)
+{ 
+    int x = 0, y = r; 
+    int d = 3 - 2 * r; 
+    eight_points_circle(xc, yc, x, y, c); 
+    while (y >= x) 
+    { 
+        // for each pixel we will 
+        // draw all eight pixels 
+          
+        x++; 
+  
+        // check for decision parameter 
+        // and correspondingly  
+        // update d, x, y 
+        if (d > 0) 
+        { 
+            y--;  
+            d = d + 4 * (x - y) + 10; 
+        } 
+        else
+            d = d + 4 * x + 6; 
+        eight_points_circle(xc, yc, x, y, c); 
+    } 
+} 
+
 
 
 void gl_draw_background(color_t platform, color_t trees){
-    gl_draw_rect(0, gl_get_height() - 100, gl_get_width(), 50, platform);
+    int width = gl_get_width();
+    gl_draw_rect(0, gl_get_height() - 100, width, 50, platform);
+    gl_draw_rect(width/6, 112, 10, 300, trees);
+     gl_draw_rect(width - width/6, 112, 10, 300, trees);
 }
 
 unsigned int gl_get_char_height(void)
@@ -168,11 +188,24 @@ unsigned int gl_get_char_width(void)
     return font_get_width();
 }
 
-// void gl_draw_line(int x1, int y1, int x2, int y2, color_t c){
-// int y = 0;
-//     for(int i = x1; i <= x2; i++){ //Cycle through the x values
-//         y = (y2 - y1) + y1  * (i - x1)/(x2 -x1); //Calculate the value of Y using the naive line equation
-//         gl_draw_pixel(i, y, c);
-//     }
+void gl_draw_line(int x1, int y1, int x2, int y2, color_t c){
+    //Use algorithm from https://en.wikipedia.org/wiki/Line_drawing_algorithm
+    // code from https://www.geeksforgeeks.org/bresenhams-line-generation-algorithm/
+    int m_new = 2 * (y2 - y1); 
+   int slope_error_new = m_new - (x2 - x1); 
+   for (int x = x1, y = y1; x <= x2; x++) 
+   {   
+        gl_draw_pixel(x, y, c);
+      // Add slope to increment angle formed 
+      slope_error_new += m_new; 
+  
+      // Slope error reached limit, time to 
+      // increment y and update slope error. 
+      if (slope_error_new >= 0) 
+      { 
+         y++; 
+         slope_error_new  -= 2 * (x2 - x1); 
+      } 
+   } 
 
-// }
+}
