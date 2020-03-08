@@ -18,7 +18,8 @@ void test_gl(void)
 {
     // Double buffer mode, make sure you test single buffer too!
     gl_init(_WIDTH, _HEIGHT, GL_DOUBLEBUFFER);
-    gl_draw_background(GL_AMBER, GL_PURPLE);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_draw_sprites();
    // gl_draw_circle(_WIDTH/2 - 100, _HEIGHT/2 - 100, 100, GL_AMBER);
    // gl_draw_line(50, 50, 100 ,100,  GL_RED);
     // Black derp face with rectangles

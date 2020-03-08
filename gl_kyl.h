@@ -47,6 +47,11 @@ unsigned int gl_get_width(void);
 unsigned int gl_get_height(void);
 
 /*
+* Draw sprites and set up sprite struct instances
+*/
+
+void gl_draw_sprites(void);
+/*
  * Define a type for color. We use BGRA colors, where each color
  * component R, B, G, or A is a single unsigned byte. The least
  * signficant byte is the B component, and A is most significant.
@@ -216,7 +221,7 @@ void gl_draw_circle(int x_center, int y_center, int radius, color_t c);
 
  */
 
-void gl_draw_background(color_t platform, color_t trees);
+void gl_draw_background(color_t platform, color_t trunk, color_t trees);
 
 
 /*

@@ -124,20 +124,20 @@ void gl_draw_string(int x, int y, const char* str, color_t c)
 // Function to put pixels at points in each octant
 // //Use bessemer's algorithm, algorithm/basic code explained here: https://en.wikipedia.org/wiki/Midpoint_circle_algorithm, https://www.geeksforgeeks.org/bresenhams-circle-drawing-algorithm/
 
-void eight_points_circle(int xc, int yc, int x, int y, int c) 
+void eight_points_circle(int xc, int yc, int x, int y, color_t c) 
 { 
-    gl_draw_pixel(xc+x, yc+y, GL_RED); 
-    gl_draw_pixel(xc-x, yc+y, GL_RED); 
-    gl_draw_line((xc-x), (yc+y), (xc+x), (yc+y), GL_RED); //Use draw line to fill in the circle (original code)
-    gl_draw_pixel(xc+x, yc-y, GL_RED); 
-    gl_draw_pixel(xc-x, yc-y, GL_RED); 
-    gl_draw_line(xc-x, yc-y, xc+x, yc-y, GL_RED);
-    gl_draw_pixel(xc+y, yc+x, GL_RED); 
-    gl_draw_pixel(xc-y, yc+x, GL_RED); 
-    gl_draw_line(xc-y, yc+x, xc+y, yc+x, GL_RED);
-    gl_draw_pixel(xc+y, yc-x, GL_RED); 
-    gl_draw_pixel(xc-y, yc-x, GL_RED); 
-    gl_draw_line(xc-y, yc-x, xc+y, yc-x, GL_RED);
+    gl_draw_pixel(xc+x, yc+y, c); 
+    gl_draw_pixel(xc-x, yc+y, c); 
+    gl_draw_line((xc-x), (yc+y), (xc+x), (yc+y), c); //Use draw line to fill in the circle (original code)
+    gl_draw_pixel(xc+x, yc-y, c); 
+    gl_draw_pixel(xc-x, yc-y, c); 
+    gl_draw_line(xc-x, yc-y, xc+x, yc-y, c);
+    gl_draw_pixel(xc+y, yc+x, c); 
+    gl_draw_pixel(xc-y, yc+x, c); 
+    gl_draw_line(xc-y, yc+x, xc+y, yc+x, c);
+    gl_draw_pixel(xc+y, yc-x, c); 
+    gl_draw_pixel(xc-y, yc-x, c); 
+    gl_draw_line(xc-y, yc-x, xc+y, yc-x, c);
 
 } 
   
@@ -169,13 +169,35 @@ void gl_draw_circle(int xc, int yc, int r, color_t c)
     } 
 } 
 
-
-
-void gl_draw_background(color_t platform, color_t trees){
+void gl_draw_sprites(){
     int width = gl_get_width();
-    gl_draw_rect(0, gl_get_height() - 100, width, 50, platform);
-    gl_draw_rect(width/6, 112, 10, 300, trees);
-     gl_draw_rect(width - width/6, 112, 10, 300, trees);
+
+    //Draw box
+    gl_draw_circle(width/4 + 15, gl_get_height() - 115, 15, GL_WHITE);
+    gl_draw_circle(width/4 + 65, gl_get_height() - 115, 15, GL_WHITE);
+    gl_draw_rect(width/4, gl_get_height() - 200, 80, 80, GL_BLUE);
+    //Implement hit box
+    gl_draw_circle(width - (width/4 + 65), gl_get_height() - 150, 50, GL_ORANGE);
+    gl_draw_circle(width - (width/4 + 45), gl_get_height() - 165, 5, GL_BLACK);
+    gl_draw_circle(width - (width/4 + 85), gl_get_height() - 165, 5, GL_BLACK);
+
+    //Draw ball
+
+    // draw each character
+    // include static hit box that can be updated
+    // box vs ball
+    // Maybe we should create a struct with an accessible hit box + hit points?
+}
+
+void gl_draw_background(color_t platform, color_t trunk, color_t trees){
+    int tree_width = 10; 
+    int width = gl_get_width();
+    gl_draw_rect(0, gl_get_height() - 100, width, 50, platform); //The platform
+    gl_draw_rect(width/6, 112, tree_width, 300, trunk); //Set a tree trunk at one end of the platform
+    gl_draw_rect(width - width/6, 112, tree_width, 300, trunk); //Set a tree trunk at the other end of the platform
+    gl_draw_circle(width/6 + tree_width/2, 112, 50, trees);
+    gl_draw_circle((width - width/6) + tree_width/2, 112, 50, trees);
+
 }
 
 unsigned int gl_get_char_height(void)
