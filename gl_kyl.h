@@ -17,7 +17,20 @@
 
 #include "fb.h"
 
+
+
+
 typedef enum { GL_SINGLEBUFFER = FB_SINGLEBUFFER, GL_DOUBLEBUFFER = FB_DOUBLEBUFFER } gl_mode_t;
+
+typedef struct {
+    int x;
+    int y; //The x, y, coordinates of either the top of the box or the center of the ball
+    int hit_x_left; 
+    int hit_x_right;
+    int hit_y_top;
+    int hit_y_bottom; //The four corners of a hitbox 
+    int hit_points; //number of hit points remaining
+} sprite;
 
 /*
  * Initialize the graphic library. This function will call fb_init in turn 
@@ -50,12 +63,36 @@ unsigned int gl_get_height(void);
 * Draw sprites and set up sprite struct instances
 */
 
-void gl_draw_sprites(void);
+
+void gl_draw_sprites(int box_move, int ball_move);
+
+
+/*
+ * Draw the ball sprite, one orange circle with eyes
+ *
+ * @param x  the x_center location of the ball
+ * @param y  the y_center location of the ball
+ * @param circle_r  the radius of the ball
+  @param eye_r  the radius of the eye
+ */
+void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r);
+
+/*
+ * Draw the box sprite, one blue rectangle with wheels
+ *
+ * @param x  the x location of the box
+ * @param y  the y location of the box
+ * @param box_r  the radius of the box
+  @param wheel_r  the radius of the wheel
+ */
+void gl_draw_box(int x, int y, int box_r, int wheel_r);
 /*
  * Define a type for color. We use BGRA colors, where each color
  * component R, B, G, or A is a single unsigned byte. The least
  * signficant byte is the B component, and A is most significant.
  */
+
+
 typedef unsigned int color_t;
 
 /*
@@ -208,7 +245,8 @@ void gl_draw_circle(int x_center, int y_center, int radius, color_t c);
 //  * @param y  the distance from the center in the y direction
 //  * @param c  the color of the circle
  
-// void eight_points_circle(int x_center, int y_center, int x, int y, int c);
+ void eight_points_circle(int x_center, int y_center, int x, int y, color_t c);
+
 
 /*
  * Draw a filled background with a platform of color platform and trees of color trees.
