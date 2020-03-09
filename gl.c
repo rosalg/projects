@@ -7,7 +7,8 @@
 #include "printf.h"
 #include "shell.h"
 
-
+static volatile sprite box; 
+static sprite ball;
 void gl_init(unsigned int width, unsigned int height, gl_mode_t mode)
 {
     fb_init(width, height, 4, mode);    // use 32-bit depth always for graphics library
@@ -120,42 +121,108 @@ void gl_draw_string(int x, int y, const char* str, color_t c)
      }
 }
 
-void eight_points_circle(int x_center, int y_center, int x, int y, int c){
-    //Draw a pixel in each octant
-    gl_draw_pixel(x_center + x, y_center - y, c);
-    gl_draw_pixel(x_center + x, y_center + y, c);
-    gl_draw_pixel(x_center - x, y_center - y, c);
-    gl_draw_pixel(x_center - x, y_center + y, c);
-    gl_draw_pixel(x_center + y, y_center + x, c);
-    gl_draw_pixel(x_center + y, y_center - x, c);
-    gl_draw_pixel(x_center - y, y_center + x, c);
-    gl_draw_pixel(x_center - y, y_center - x, c);
+
+// Function to put pixels at points in each octant
+// //Use bessemer's algorithm, algorithm/basic code explained here: https://en.wikipedia.org/wiki/Midpoint_circle_algorithm, https://www.geeksforgeeks.org/bresenhams-circle-drawing-algorithm/
+
+void eight_points_circle(int xc, int yc, int x, int y, color_t c) 
+{ 
+    gl_draw_pixel(xc+x, yc+y, c); 
+    gl_draw_pixel(xc-x, yc+y, c); 
+    gl_draw_line((xc-x), (yc+y), (xc+x), (yc+y), c); //Use draw line to fill in the circle (original code)
+    gl_draw_pixel(xc+x, yc-y, c); 
+    gl_draw_pixel(xc-x, yc-y, c); 
+    gl_draw_line(xc-x, yc-y, xc+x, yc-y, c);
+    gl_draw_pixel(xc+y, yc+x, c); 
+    gl_draw_pixel(xc-y, yc+x, c); 
+    gl_draw_line(xc-y, yc+x, xc+y, yc+x, c);
+    gl_draw_pixel(xc+y, yc-x, c); 
+    gl_draw_pixel(xc-y, yc-x, c); 
+    gl_draw_line(xc-y, yc-x, xc+y, yc-x, c);
+
+} 
+  
+// Function for circle-generation 
+// using Bresenham's algorithm 
+void gl_draw_circle(int xc, int yc, int r, color_t c)
+{ 
+    int x = 0, y = r; 
+    int d = 3 - 2 * r; 
+    eight_points_circle(xc, yc, x, y, c); 
+    while (y >= x) 
+    { 
+        // for each pixel we will 
+        // draw all eight pixels 
+          
+        x++; 
+  
+        // check for decision parameter 
+        // and correspondingly  
+        // update d, x, y 
+        if (d > 0) 
+        { 
+            y--;  
+            d = d + 4 * (x - y) + 10; 
+        } 
+        else
+            d = d + 4 * x + 6; 
+        eight_points_circle(xc, yc, x, y, c); 
+    } 
+} 
+
+void gl_draw_sprites(int box_move, int ball_move){
+    int width = gl_get_width();
+    int height = gl_get_height();
+    gl_draw_rect(0, height- 200, width, 100, GL_BLACK); //Cover any previous sprites with a black rectangle
+    //Set up and draw the box
+    int box_radius = 80;
+    int wheel_radius = 15;
+    box.hit_points = 100; 
+    if((width/4 + box_move) > 0 && (width/4 + box_move) < (width -box_radius)){ //If the movement doesn't move the box out of bounds
+    box.x = width/4 + box_move; //Starting position = width/4, as player hits buttons the sprite moves
+    } 
+    box.y = height - 200;
+    box.hit_x_left = box.x;
+    int hit_x_right = box.x + box_radius;
+    int hit_y_top = box.y;
+    int hit_y_bottom = box.y + box_radius + wheel_radius;
+    gl_draw_box(box.x, box.y, box_radius, wheel_radius); //Draw the box
+    
+    //set up and draw the ball 
+    int ball_radius = 50; 
+    int eye_radius = 5; 
+    ball.hit_points = 100;
+    if((width - (width/4 + 65) + ball_move) > 0 && (width - (width/4 + 65) + ball_move) < (width - ball_radius)){ //If the movement doesn't move the ball out of bounds, then move the ball
+    ball.x = width - (width/4 + 65) + ball_move; //As player hits buttons the sprite moves by ball_move amount
+   }
+    ball.y = height - 150; 
+    ball.hit_x_left = ball.x - ball_radius/2;
+    ball.hit_x_right = ball.x + ball_radius/2;
+    ball.hit_y_top = ball.y + ball_radius/2;
+    ball.hit_y_bottom = ball.y - ball_radius/2;
+    gl_draw_circle_sprite(ball.x, ball.y, ball_radius, eye_radius); //Draw the ball
+}
+void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r){
+    gl_draw_circle(x, y, circle_r, GL_ORANGE);
+    gl_draw_circle(x - 15, y - 15, eye_r, GL_BLACK);
+    gl_draw_circle(x + 15, y - 15, eye_r, GL_BLACK);
 }
 
-
-void gl_draw_circle(int x_center, int y_center, int radius, color_t c){ 
-//Use bessemer's algorithm, algorithm/basic code explained here: https://en.wikipedia.org/wiki/Midpoint_circle_algorithm, https://www.geeksforgeeks.org/bresenhams-circle-drawing-algorithm/
-int y_pos = radius;
-int x_pos = 0; 
-int decision_bessemer = 3 - 2 * radius; 
-eight_points_circle(x_center, y_center, x_pos, y_pos, c); //Draw points around the circle
-while(y_pos >= x_pos){ //Once x_pos = radius as well, the circle is complete
-    x_pos++; //Increment the x_pos before changing the y_pos
-    if(decision_bessemer > 0){
-        y_pos--; 
-       // decision_bessemer = decision_bessemer + (4 * x_pos) + 6; 
-    } else {
-       // decision_bessemer = decision_bessemer + 4 * (x_pos – y_pos) + 10; 
-        y_pos--;
-
-    }
-    eight_points_circle(x_center,y_center, x_pos,y_pos, c);
-}
+void gl_draw_box(int x, int y, int box_r, int wheel_r){
+    gl_draw_circle(x + wheel_r, y + box_r, wheel_r, GL_WHITE);
+    gl_draw_circle(x + (wheel_r*4), y + box_r, wheel_r, GL_WHITE);
+    gl_draw_rect(x, y, box_r, box_r, GL_BLUE);
 }
 
+void gl_draw_background(color_t platform, color_t trunk, color_t trees){
+    int tree_width = 10; 
+    int width = gl_get_width();
+    gl_draw_rect(0, gl_get_height() - 100, width, 50, platform); //The platform
+    gl_draw_rect(width/6, 112, tree_width, 300, trunk); //Set a tree trunk at one end of the platform
+    gl_draw_rect(width - width/6, 112, tree_width, 300, trunk); //Set a tree trunk at the other end of the platform
+    gl_draw_circle(width/6 + tree_width/2, 112, 50, trees);
+    gl_draw_circle((width - width/6) + tree_width/2, 112, 50, trees);
 
-void gl_draw_background(color_t platform, color_t trees){
-    gl_draw_rect(0, gl_get_height() - 100, gl_get_width(), 50, platform);
 }
 
 unsigned int gl_get_char_height(void)
@@ -168,11 +235,24 @@ unsigned int gl_get_char_width(void)
     return font_get_width();
 }
 
-// void gl_draw_line(int x1, int y1, int x2, int y2, color_t c){
-// int y = 0;
-//     for(int i = x1; i <= x2; i++){ //Cycle through the x values
-//         y = (y2 - y1) + y1  * (i - x1)/(x2 -x1); //Calculate the value of Y using the naive line equation
-//         gl_draw_pixel(i, y, c);
-//     }
+void gl_draw_line(int x1, int y1, int x2, int y2, color_t c){
+    //Use algorithm from https://en.wikipedia.org/wiki/Line_drawing_algorithm
+    // code from https://www.geeksforgeeks.org/bresenhams-line-generation-algorithm/
+    int m_new = 2 * (y2 - y1); 
+   int slope_error_new = m_new - (x2 - x1); 
+   for (int x = x1, y = y1; x <= x2; x++) 
+   {   
+        gl_draw_pixel(x, y, c);
+      // Add slope to increment angle formed 
+      slope_error_new += m_new; 
+  
+      // Slope error reached limit, time to 
+      // increment y and update slope error. 
+      if (slope_error_new >= 0) 
+      { 
+         y++; 
+         slope_error_new  -= 2 * (x2 - x1); 
+      } 
+   } 
 
-// }
+}

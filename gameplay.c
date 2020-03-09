@@ -18,7 +18,10 @@
 
 void test_gl(void)
 {
+  int start_box_move = 0; 
+  int start_ball_move = 0; 
     // Double buffer mode, make sure you test single buffer too!
+<<<<<<< HEAD
     //gl_init(_WIDTH, _HEIGHT, GL_DOUBLEBUFFER);
     //gl_draw_background(GL_AMBER, GL_RED);
     //gl_draw_circle(_WIDTH/2 - 100, _HEIGHT/2 - 100, 100, GL_AMBER);
@@ -43,6 +46,25 @@ void test_gl(void)
 
 
 
+=======
+    gl_init(_WIDTH, _HEIGHT, GL_DOUBLEBUFFER);
+    gl_draw_sprites(start_box_move, start_ball_move);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    gl_draw_sprites(start_box_move, start_ball_move);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer(); //Set up both buffers with the background
+    for (int x = 0; x <10; x++){
+      gl_draw_sprites(start_box_move + (50 * x), start_ball_move + (50 * x)); //Redraw the sprites in another location
+      gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED); //Draw the background again to restore the trees
+      gl_swap_buffer();
+      gl_draw_sprites(start_box_move + (50 * x) * x, start_ball_move + (50 * x)); //Redraw the sprites in another location
+      gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED); //Draw the background again to restore the trees
+      gl_swap_buffer();
+      timer_delay(.5);
+    }
+   
+>>>>>>> cadb4205786683a351d9e8f546829105d9f92fa3
 
 gl_swap_buffer();
 
