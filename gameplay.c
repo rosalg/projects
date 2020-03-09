@@ -57,12 +57,12 @@ void main(void)
 {
     uart_init();
     timer_init();
-    printf("Time to play!\n");
-    timer_delay(1);
+    //printf("Time to play!\n");
+    //timer_delay(1);
     controller_init(21, 20);
      //test_gl();
 
-    printf("\n%d\n", gpio_read(20));
-    printf("Game over! Come back soon!\n");
+    //printf("\n%d\n", gpio_read(20));
+    //printf("Game over! Come back soon!\n");
     uart_putchar(EOT);
 }

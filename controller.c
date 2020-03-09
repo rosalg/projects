@@ -50,7 +50,8 @@ void controller_init(unsigned int out_gpio, unsigned int in_gpio) {
     IN = in_gpio;
     gpio_set_output(OUT);
     gpio_set_input(IN);
-    printf("Entering asm");
+    //printf("Entering asm");
     controller_start_asm();
+    printf("\n%d\n", gpio_read(20));
 }
 
