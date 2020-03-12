@@ -58,7 +58,7 @@ void main(void)
 {
     uart_init();
     timer_init();
-    //gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
+    gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
     //player_init(_WIDTH/2, _HEIGHT/2, 10, 10, _WIDTH, _HEIGHT);
     //timer_delay(5);
     //printf("Time to play!\n");
