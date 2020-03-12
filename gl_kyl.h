@@ -64,7 +64,7 @@ unsigned int gl_get_height(void);
 */
 
 
-void gl_draw_sprites(int box_move, int ball_move);
+void player_draw_sprites(int box_move, int ball_move);
 
 
 /*
@@ -86,6 +86,25 @@ void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r);
   @param wheel_r  the radius of the wheel
  */
 void gl_draw_box(int x, int y, int box_r, int wheel_r);
+
+/*
+ * If the box is hit (defined as the ball moving faster than the box on collision), then 
+ reduce the box's hit points by 10.
+ */
+void box_hit(void); 
+
+
+/*
+ * If the ball is hit (defined as the box moving faster than the ball on collision), then 
+ reduce the ball's hit points by 10.
+ */ 
+void ball_hit(void); 
+
+/*
+ * If the sprites contact with eachother, return true, if not, return false.
+ */ 
+int sprites_hit();
+
 /*
  * Define a type for color. We use BGRA colors, where each color
  * component R, B, G, or A is a single unsigned byte. The least
