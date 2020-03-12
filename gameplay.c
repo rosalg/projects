@@ -67,12 +67,14 @@ void main(void)
     controller_init(21);
     while(1) {
         controller_poll(); 
+        /*
         if (controller_get_JOYSTICK_X() == 119) {
             player_move(10, 0);
         } else if (controller_get_JOYSTICK_X() == 8) {
             player_move(-10, 0);
-        }
-        timer_delay_ms(20);
+        }*/
+        controller_get_inputs();
+        timer_delay_ms(1000);
     }
      //test_gl();
 
