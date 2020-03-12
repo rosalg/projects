@@ -50,4 +50,44 @@ void controller_asm_write(void);
 
 void controller_read(void);
 
+void controller_poll(void);
+
+void controller_get_inputs(void);
+
+int controller_get_A(void);
+
+int controller_get_B(void);
+
+int controller_get_X(void);
+
+int controller_get_Y(void);
+
+int controller_get_START(void);
+
+int controller_get_L(void);
+
+int controller_get_R(void);
+
+int controller_get_Z(void);
+
+int controller_get_D_UP(void);
+
+int controller_get_D_DOWN(void);
+
+int controller_get_D_LEFT(void);
+
+int controller_get_D_RIGHT(void);
+
+int controller_get_LEFT_TRIGGER(void);
+
+int controller_get_RIGHT_TRIGGER(void);
+
+int controller_get_JOYSTICK_X(void);
+
+int controller_get_JOYSTICK_Y(void);
+
+int controller_get_CSTICK_X(void);
+
+int controller_get_CSTICK_Y(void);
+
 #endif

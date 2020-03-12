@@ -9,6 +9,7 @@
 #include "gpio.h"
 #include "gpioextra.h"
 #include "controller.h"
+#include "player.h"
 
 #define _WIDTH 640
 #define _HEIGHT 512
@@ -57,9 +58,24 @@ void main(void)
 {
     uart_init();
     timer_init();
+    //gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
+    //player_init(_WIDTH/2, _HEIGHT/2, 10, 10, _WIDTH, _HEIGHT);
+    //timer_delay(5);
     //printf("Time to play!\n");
     //timer_delay(1);
-    controller_init(21, 20);
+    //gl_draw_rect(100, 100, 10, 10, GL_RED);
+    controller_init(21);
+    while(1) {
+        controller_poll();
+        /*
+        if (controller_get_JOYSTICK_X() == 119) {
+            player_move(10, 0);
+        } else if (controller_get_JOYSTICK_X() == 8) {
+            player_move(-10, 0);
+        }*/
+        controller_get_inputs();
+        timer_delay(1);
+    }
      //test_gl();
 
     //printf("\n%d\n", gpio_read(20));
