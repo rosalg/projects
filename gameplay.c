@@ -57,7 +57,26 @@ void test_gl(void)
     // Show buffer with drawn contents
 }
 
-
+void test_con(void) {
+    //gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
+    //player_init(_WIDTH/2, _HEIGHT/2, 10, 10, _WIDTH, _HEIGHT);
+    //timer_delay(5);
+    //printf("Time to play!\n");
+    //timer_delay(1);
+    //gl_draw_rect(100, 100, 10, 10, GL_RED);
+    controller_init(21);
+    while(1) {
+        controller_poll();
+        
+        if (controller_get_JOYSTICK_X() == 119) {
+            player_move(10, 0);
+        } else if (controller_get_JOYSTICK_X() == 8) {
+            player_move(-10, 0);
+        }
+        controller_get_inputs();
+        timer_delay(1);
+    }
+}
 
 /* TODO: Add tests to test your graphics library and console.
    For the graphics library, test both single & double
@@ -72,41 +91,8 @@ void main(void)
 {
     uart_init();
     timer_init();
-    //gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
-    //player_init(_WIDTH/2, _HEIGHT/2, 10, 10, _WIDTH, _HEIGHT);
-    //timer_delay(5);
-    //printf("Time to play!\n");
-    //timer_delay(1);
-    //gl_draw_rect(100, 100, 10, 10, GL_RED);
-// <<<<<<< HEAD
-    // controller_init(21);
-    // while(1) {
-    //     controller_poll();
-        
-    //     if (controller_get_JOYSTICK_X() == 119) {
-    //         player_move(10, 0);
-    //     } else if (controller_get_JOYSTICK_X() == 8) {
-    //         player_move(-10, 0);
-    //     }
-    //     controller_get_inputs();
-    //     timer_delay(1);
-    // }
-//      test_gl();
-// =======
-//     controller_init(21);
-//     while(1) {
-//         controller_poll(); 
-//         if (controller_get_JOYSTICK_X() == 119) {
-//             player_move(10, 0);
-//         } else if (controller_get_JOYSTICK_X() == 8) {
-//             player_move(-10, 0);
-//         }
-//         timer_delay_ms(20);
-   // }
->>>>>>> d22a397453a11a488955691f016172cb062d712d
-     //test_gl();
-// >>>>>>> a3398c7d597fd6987fe8530c55ac0d962f8032ce
-
+    test_con(); 
+    test_gl();
     //printf("\n%d\n", gpio_read(20));
     //printf("Game over! Come back soon!\n");
     uart_putchar(EOT);

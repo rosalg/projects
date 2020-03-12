@@ -15,23 +15,23 @@ static sprite ball;
 //!!! I COMMENTED OUT GL.H!!!!!!!
 
 
-// void player_init(int x, int y, int w, int h, int c_w, int c_h) {
-//     //gl_init(c_w, c_h, GL_DOUBLEBUFFER);
-//     x_pos = x;
-//     y_pos = y;
-//     width = w;
-//     height= h;
-//     //gl_draw_rect(x, y, w, h, GL_RED);
-//     //gl_swap_buffer();
-// }
+void player_init(int x, int y, int w, int h, int c_w, int c_h) {
+    gl_init(c_w, c_h, GL_DOUBLEBUFFER);
+    x_pos = x;
+    y_pos = y;
+    width = w;
+    height= h;
+    gl_draw_rect(x, y, w, h, GL_RED);
+    gl_swap_buffer();
+}
 
-// void player_move(int x, int y) {
-//     gl_clear(GL_BLACK);
-//     x_pos += x;
-//     y_pos += y;
-//     gl_draw_rect(x_pos, y_pos, width, height, GL_RED);
-//     gl_swap_buffer();
-// }
+ void player_move(int x, int y) {
+    gl_clear(GL_BLACK);
+    x_pos += x;
+    y_pos += y;
+    gl_draw_rect(x_pos, y_pos, width, height, GL_RED);
+    gl_swap_buffer();
+}
 
 void player_draw_sprites(int box_move, int ball_move){ //Draw and move the sprites
     int width = gl_get_width();
