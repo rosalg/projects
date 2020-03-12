@@ -81,12 +81,13 @@ int sprites_hit(){
     
    
     if(box.hit_y_bottom >= ball.hit_y_top){       
-           printf("%s\n", "move");
-           printf("%d\n", ball.hit_x_right);
-            printf("%d\n", box.hit_x_right);
-            printf("%d\n",  ball.hit_x_left);
+           // printf("%s\n", "move");
+           // printf("%d\n", ball.hit_x_right);
+           //  printf("%d\n", box.hit_x_right);
+           //  printf("%d\n",  ball.hit_x_left);
+        //|| (ball.hit_x_right >= box.hit_x_left) &&  (ball.hit_x_right <= box.hit_x_left)
 
-        if ((ball.hit_x_right >= box.hit_x_right >= ball.hit_x_left) || (ball.hit_x_right >= box.hit_x_left >= ball.hit_x_left)){
+        if ((ball.hit_x_right >= box.hit_x_right) &&  (box.hit_x_left >= ball.hit_x_left)){
             printf("%d\n", ball.hit_y_top);
             printf("%d\n", box.hit_y_bottom);
             return 1;

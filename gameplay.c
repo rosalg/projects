@@ -103,7 +103,7 @@ void main(void)
 //         }
 //         timer_delay_ms(20);
    // }
-     //test_gl();
+     test_gl();
 // >>>>>>> a3398c7d597fd6987fe8530c55ac0d962f8032ce
 
     //printf("\n%d\n", gpio_read(20));
