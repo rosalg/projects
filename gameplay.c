@@ -78,6 +78,7 @@ void main(void)
     //printf("Time to play!\n");
     //timer_delay(1);
     //gl_draw_rect(100, 100, 10, 10, GL_RED);
+// <<<<<<< HEAD
     // controller_init(21);
     // while(1) {
     //     controller_poll();
@@ -90,7 +91,20 @@ void main(void)
     //     controller_get_inputs();
     //     timer_delay(1);
     // }
-     test_gl();
+//      test_gl();
+// =======
+//     controller_init(21);
+//     while(1) {
+//         controller_poll(); 
+//         if (controller_get_JOYSTICK_X() == 119) {
+//             player_move(10, 0);
+//         } else if (controller_get_JOYSTICK_X() == 8) {
+//             player_move(-10, 0);
+//         }
+//         timer_delay_ms(20);
+   // }
+     //test_gl();
+// >>>>>>> a3398c7d597fd6987fe8530c55ac0d962f8032ce
 
     //printf("\n%d\n", gpio_read(20));
     //printf("Game over! Come back soon!\n");
