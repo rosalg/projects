@@ -31,33 +31,36 @@ void test_gl(void)
     gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
     gl_swap_buffer(); //Set up both buffers with the background
    
-    for (int x = 0; x <10; x++){
-      box_move = start_box_move + (50 * x);
-      ball_move = start_ball_move + (50 * x);
-      player_draw_sprites(box_move, ball_move); //Redraw the sprites in another location
-      gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED); //Draw the background again to restore the trees
-      if(sprites_hit() == 1){
-        printf("%s\n", "HIT!");
-        if (box_move > ball_move){
-          ball_hit(); 
-        }
-        else {
-          box_hit();
-        }
-      }
-      gl_swap_buffer();
-      player_draw_sprites(box_move, ball_move); //Redraw the sprites in another location
-      gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED); //Draw the background again to restore the trees
-      gl_swap_buffer();
-      timer_delay(.5);
-    }
-
-    gl_swap_buffer();
+    while (sprites_hit() == 0){
+      move_ball(1);//1 means move forward, 0 means move back;
+  //    move_box(1); 
+      printf("%s\n", "move");
+    } 
+  //  gl_swap_buffer();
     timer_delay(3);
     // Show buffer with drawn contents
 }
 
-
+void test_con(void) {
+    //gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
+    //player_init(_WIDTH/2, _HEIGHT/2, 10, 10, _WIDTH, _HEIGHT);
+    //timer_delay(5);
+    //printf("Time to play!\n");
+    //timer_delay(1);
+    //gl_draw_rect(100, 100, 10, 10, GL_RED);
+    controller_init(21);
+    while(1) {
+        controller_poll();
+        
+        if (controller_get_JOYSTICK_X() == 119) {
+            player_move(10, 0);
+        } else if (controller_get_JOYSTICK_X() == 8) {
+            player_move(-10, 0);
+        }
+        controller_get_inputs();
+        timer_delay(1);
+    }
+}
 
 /* TODO: Add tests to test your graphics library and console.
    For the graphics library, test both single & double
@@ -70,43 +73,13 @@ void test_gl(void)
 
 void main(void)
 {
-    uart_init();
-    timer_init();
-    //gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
-    //player_init(_WIDTH/2, _HEIGHT/2, 10, 10, _WIDTH, _HEIGHT);
-    //timer_delay(5);
-    //printf("Time to play!\n");
-    //timer_delay(1);
-    //gl_draw_rect(100, 100, 10, 10, GL_RED);
-// <<<<<<< HEAD
-    // controller_init(21);
-    // while(1) {
-    //     controller_poll();
-        
-    //     if (controller_get_JOYSTICK_X() == 119) {
-    //         player_move(10, 0);
-    //     } else if (controller_get_JOYSTICK_X() == 8) {
-    //         player_move(-10, 0);
-    //     }
-    //     controller_get_inputs();
-    //     timer_delay(1);
-    // }
-//      test_gl();
-// =======
-//     controller_init(21);
-//     while(1) {
-//         controller_poll(); 
-//         if (controller_get_JOYSTICK_X() == 119) {
-//             player_move(10, 0);
-//         } else if (controller_get_JOYSTICK_X() == 8) {
-//             player_move(-10, 0);
-//         }
-//         timer_delay_ms(20);
-   // }
-     test_gl();
-// >>>>>>> a3398c7d597fd6987fe8530c55ac0d962f8032ce
+    // uart_init();
+    // timer_init();
+    // gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
 
-    //printf("\n%d\n", gpio_read(20));
-    //printf("Game over! Come back soon!\n");
-    uart_putchar(EOT);
+    // printf("Time to play!\n");
+    // //timer_delay(1);
+    // test_gl();
+    // printf("Game over! Come back soon!\n");
+    // uart_putchar(EOT);
 }

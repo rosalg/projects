@@ -11,27 +11,64 @@ static int width = 0;
 static int height = 0;
 static volatile sprite box; 
 static sprite ball;
-
+int move_forward = 5;
+int move_back = 3;
 //!!! I COMMENTED OUT GL.H!!!!!!!
+//!!! STILL WORKING ON MOVEMENT. CURRENT ISSUE IS THAT I REDRAW THE NON-MOVING SPRITE IN THE ORIGINAL POSITION!!!!!!!
 
 
-// void player_init(int x, int y, int w, int h, int c_w, int c_h) {
-//     //gl_init(c_w, c_h, GL_DOUBLEBUFFER);
-//     x_pos = x;
-//     y_pos = y;
-//     width = w;
-//     height= h;
-//     //gl_draw_rect(x, y, w, h, GL_RED);
-//     //gl_swap_buffer();
-// }
+void player_init(int x, int y, int w, int h, int c_w, int c_h) {
+    gl_init(c_w, c_h, GL_DOUBLEBUFFER);
+    x_pos = x;
+    y_pos = y;
+    width = w;
+    height= h;
+    gl_draw_rect(x, y, w, h, GL_RED);
+    gl_swap_buffer();
+}
 
-// void player_move(int x, int y) {
-//     gl_clear(GL_BLACK);
-//     x_pos += x;
-//     y_pos += y;
-//     gl_draw_rect(x_pos, y_pos, width, height, GL_RED);
-//     gl_swap_buffer();
-// }
+ void player_move(int x, int y, int sprite) {
+    gl_clear(GL_BLACK);
+    x_pos += x;
+    y_pos += y;
+    gl_draw_rect(x_pos, y_pos, width, height, GL_RED);
+    gl_swap_buffer();
+}
+
+ void move_ball(int x){
+    int movement = 0;
+    if (x == 1){
+       movement = move_forward;
+    }
+    else {
+       movement = move_back;
+    }
+    player_draw_sprites(0, movement);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    player_draw_sprites(0, movement);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    timer_delay(.1);
+ }
+
+  void move_box(int x){
+      int movement = 0;
+    if (x == 1){
+       movement = move_forward;
+    }
+    else {
+       movement = move_back;
+    }
+    player_draw_sprites(movement, 0);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    player_draw_sprites(movement, 0);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    timer_delay(.1);
+ }
+ 
 
 void player_draw_sprites(int box_move, int ball_move){ //Draw and move the sprites
     int width = gl_get_width();
@@ -87,9 +124,7 @@ int sprites_hit(){
            //  printf("%d\n",  ball.hit_x_left);
         //|| (ball.hit_x_right >= box.hit_x_left) &&  (ball.hit_x_right <= box.hit_x_left)
 
-        if ((ball.hit_x_right >= box.hit_x_right) &&  (box.hit_x_left >= ball.hit_x_left)){
-            printf("%d\n", ball.hit_y_top);
-            printf("%d\n", box.hit_y_bottom);
+        if (((ball.hit_x_right >= box.hit_x_right) &&  (box.hit_x_right >= ball.hit_x_left))){
             return 1;
         }
 }

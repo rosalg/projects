@@ -26,6 +26,7 @@ void controller_read() {
             low_time++;
             if (low_time > 10) break;
         }
+        if (low_time > 10) break;
         if (low_time >= 2) {
             bytes[cycle] = 0;
         } else {
@@ -36,6 +37,7 @@ void controller_read() {
             high_time++;
             if (high_time > 10) break;
         }
+        if (high_time > 10) break;
         cycle++;
     }
 
