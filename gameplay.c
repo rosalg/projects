@@ -66,15 +66,13 @@ void main(void)
     //gl_draw_rect(100, 100, 10, 10, GL_RED);
     controller_init(21);
     while(1) {
-        controller_poll();
-        /*
+        controller_poll(); 
         if (controller_get_JOYSTICK_X() == 119) {
             player_move(10, 0);
         } else if (controller_get_JOYSTICK_X() == 8) {
             player_move(-10, 0);
-        }*/
-        controller_get_inputs();
-        timer_delay(1);
+        }
+        timer_delay_ms(20);
     }
      //test_gl();
 

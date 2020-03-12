@@ -22,13 +22,20 @@ void controller_read() {
     int low_time = 0;
     while (cycle < 64) {
         low_time = 0;
-        while (gpio_read(DATA) == 0) low_time++;
+        while(gpio_read(DATA) == 0) {
+            low_time++;
+            if (low_time > 10) break;
+        }
         if (low_time >= 2) {
             bytes[cycle] = 0;
         } else {
             bytes[cycle] = 1;
         }
-        while (gpio_read(DATA) == 1);
+        int high_time = 0;
+        while(gpio_read(DATA)) {
+            high_time++;
+            if (high_time > 10) break;
+        }
         cycle++;
     }
 
