@@ -31,28 +31,12 @@ void test_gl(void)
     gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
     gl_swap_buffer(); //Set up both buffers with the background
    
-    for (int x = 0; x <10; x++){
-      box_move = start_box_move + (50 * x);
-      ball_move = start_ball_move + (50 * x);
-      player_draw_sprites(box_move, ball_move); //Redraw the sprites in another location
-      gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED); //Draw the background again to restore the trees
-      if(sprites_hit() == 1){
-        printf("%s\n", "HIT!");
-        if (box_move > ball_move){
-          ball_hit(); 
-        }
-        else {
-          box_hit();
-        }
-      }
-      gl_swap_buffer();
-      player_draw_sprites(box_move, ball_move); //Redraw the sprites in another location
-      gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED); //Draw the background again to restore the trees
-      gl_swap_buffer();
-      timer_delay(.5);
-    }
-
-    gl_swap_buffer();
+    while (sprites_hit() == 0){
+      move_ball(1);//1 means move forward, 0 means move back;
+  //    move_box(1); 
+      printf("%s\n", "move");
+    } 
+  //  gl_swap_buffer();
     timer_delay(3);
     // Show buffer with drawn contents
 }
@@ -100,11 +84,14 @@ void test_con(void) {
 
 void main(void)
 {
-    uart_init();
-    timer_init();
-    test_con(); 
-    //test_gl();
-    //printf("\n%d\n", gpio_read(20));
-    //printf("Game over! Come back soon!\n");
-    uart_putchar(EOT);
+    // uart_init();
+    // timer_init();
+    // gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
+
+    // printf("Time to play!\n");
+    // //timer_delay(1);
+    // test_con();
+    // test_gl();
+    // printf("Game over! Come back soon!\n");
+    // uart_putchar(EOT);
 }

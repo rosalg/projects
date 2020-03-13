@@ -101,6 +101,19 @@ int sprites_hit();
  * signficant byte is the B component, and A is most significant.
  */
 
+/*
+ * Move the ball sprite
+ *
+ * @param x  whether the ball moves forward or back (0 for back, 1 for forward)
+ */
+ void move_ball(int x);
+
+ /*
+ * Move the box sprite
+ *
+ * @param x  whether the box moves forward or back (0 for back, 1 for forward)
+ */
+ void move_box(int x);
 
 typedef unsigned int color_t;
 

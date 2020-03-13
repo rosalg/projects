@@ -8,6 +8,7 @@
 
 static volatile sprite box; 
 static sprite ball;
+<<<<<<< HEAD
 
 void player_init(sprite* player) {
     gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
@@ -21,7 +22,43 @@ void player_move(sprite* player, int x, int y) {
     gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
     gl_swap_buffer();
     gl_draw_rect(player->x - x, player->y - y, 10, 10, GL_BLACK);
+    gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
 }
+
+ void move_ball(int x){
+    int movement = 0;
+    if (x == 1){
+       movement = move_forward;
+    }
+    else {
+       movement = move_back;
+    }
+    player_draw_sprites(0, movement);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    player_draw_sprites(0, movement);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    timer_delay(.1);
+ }
+
+  void move_box(int x){
+      int movement = 0;
+    if (x == 1){
+       movement = move_forward;
+    }
+    else {
+       movement = move_back;
+    }
+    player_draw_sprites(movement, 0);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    player_draw_sprites(movement, 0);
+    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
+    gl_swap_buffer();
+    timer_delay(.1);
+ }
+ 
 
 void player_draw_sprites(int box_move, int ball_move){ //Draw and move the sprites
     int width = gl_get_width();
@@ -72,13 +109,12 @@ int sprites_hit(){
     
    
     if(box.hit_y_bottom >= ball.hit_y_top){       
-        printf("%s\n", "move");
-        printf("%d\n", ball.hit_x_right);
-        printf("%d\n", box.hit_x_right);
-        printf("%d\n",  ball.hit_x_left);
-        if ((ball.hit_x_right >= box.hit_x_right >= ball.hit_x_left) || (ball.hit_x_right >= box.hit_x_left >= ball.hit_x_left)){
-            printf("%d\n", ball.hit_y_top);
-            printf("%d\n", box.hit_y_bottom);
+           // printf("%s\n", "move");
+           // printf("%d\n", ball.hit_x_right);
+           //  printf("%d\n", box.hit_x_right);
+           //  printf("%d\n",  ball.hit_x_left);
+        //|| (ball.hit_x_right >= box.hit_x_left) &&  (ball.hit_x_right <= box.hit_x_left)
+        if (((ball.hit_x_right >= box.hit_x_right) &&  (box.hit_x_right >= ball.hit_x_left))){
             return 1;
         }
     }   
