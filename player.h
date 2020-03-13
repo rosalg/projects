@@ -1,8 +1,19 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-void player_init(int x, int y, int w, int h, int c_w, int c_h);
+typedef struct {
+    int x;
+    int y;
 
-void player_move(int x, int y);
+    int hit_x_left;
+    int hit_x_right;
+    int hit_y_top;
+    int hit_y_bottom;
+    int hit_points;
+}sprite;
+
+void player_init(sprite* player);
+
+void player_move(sprite* player, int x, int y);
 
 #endif

@@ -1,36 +1,26 @@
 #include "controller.h"
 #include "gpio.h"
 #include "timer.h"
-//#include "gl.h"
 #include "fb.h"
 #include "gl_kyl.h"
+#include "player.h"
+#include "printf.h"
 
-static int x_pos = 0;
-static int y_pos = 0;
-static int width = 0;
-static int height = 0;
 static volatile sprite box; 
 static sprite ball;
 
-//!!! I COMMENTED OUT GL.H!!!!!!!
-
-
-void player_init(int x, int y, int w, int h, int c_w, int c_h) {
-    gl_init(c_w, c_h, GL_DOUBLEBUFFER);
-    x_pos = x;
-    y_pos = y;
-    width = w;
-    height= h;
-    gl_draw_rect(x, y, w, h, GL_RED);
-    gl_swap_buffer();
+void player_init(sprite* player) {
+    gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
+    gl_swap_buffer();    
 }
 
- void player_move(int x, int y) {
-    gl_clear(GL_BLACK);
-    x_pos += x;
-    y_pos += y;
-    gl_draw_rect(x_pos, y_pos, width, height, GL_RED);
+void player_move(sprite* player, int x, int y) {
+    player->x += x;
+    player->y += y;
+    printf("\nplayer.x: %d\n", player->x);
+    gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
     gl_swap_buffer();
+    gl_draw_rect(player->x - x, player->y - y, 10, 10, GL_BLACK);
 }
 
 void player_draw_sprites(int box_move, int ball_move){ //Draw and move the sprites
@@ -65,6 +55,7 @@ void player_draw_sprites(int box_move, int ball_move){ //Draw and move the sprit
     ball.hit_y_bottom = ball.y - ball_radius/2;
     gl_draw_circle_sprite(ball.x, ball.y, ball_radius, eye_radius); //Draw the ball
 }
+
 void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r){
     gl_draw_circle(x, y, circle_r, GL_ORANGE);
     gl_draw_circle(x - 15, y - 15, eye_r, GL_BLACK);
@@ -81,20 +72,19 @@ int sprites_hit(){
     
    
     if(box.hit_y_bottom >= ball.hit_y_top){       
-           printf("%s\n", "move");
-           printf("%d\n", ball.hit_x_right);
-            printf("%d\n", box.hit_x_right);
-            printf("%d\n",  ball.hit_x_left);
-
+        printf("%s\n", "move");
+        printf("%d\n", ball.hit_x_right);
+        printf("%d\n", box.hit_x_right);
+        printf("%d\n",  ball.hit_x_left);
         if ((ball.hit_x_right >= box.hit_x_right >= ball.hit_x_left) || (ball.hit_x_right >= box.hit_x_left >= ball.hit_x_left)){
             printf("%d\n", ball.hit_y_top);
             printf("%d\n", box.hit_y_bottom);
             return 1;
         }
-}
-else {
-    return 0;
-}
+    }   
+    else {
+        return 0;
+    }
 }
 
 void box_hit(){

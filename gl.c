@@ -1,11 +1,11 @@
-  
-#include "gl_kyl.h"
+ #include "gl_kyl.h"
 #include "fb.h"
 #include "font.h"
 #include "malloc.h"
 #include "strings.h"
 #include "printf.h"
 #include "shell.h"
+#include "player.h"
 
 // static volatile sprite box; 
 // static sprite ball;

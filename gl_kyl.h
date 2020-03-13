@@ -16,21 +16,11 @@
  */
 
 #include "fb.h"
-
+#include "player.h"
 
 
 
 typedef enum { GL_SINGLEBUFFER = FB_SINGLEBUFFER, GL_DOUBLEBUFFER = FB_DOUBLEBUFFER } gl_mode_t;
-
-typedef struct {
-    int x;
-    int y; //The x, y, coordinates of either the top of the box or the center of the ball
-    int hit_x_left; 
-    int hit_x_right;
-    int hit_y_top;
-    int hit_y_bottom; //The four corners of a hitbox 
-    int hit_points; //number of hit points remaining
-} sprite;
 
 /*
  * Initialize the graphic library. This function will call fb_init in turn 

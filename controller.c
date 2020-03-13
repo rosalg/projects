@@ -12,7 +12,13 @@ static unsigned int bytes[64];
 
 void controller_write() {
     gpio_set_output(DATA);
+
+    // Check asm file to see exact implementation
+    //
+    // Write to controller the start command
     controller_asm_write();
+    
+    
     gpio_set_input(DATA);
  
 }

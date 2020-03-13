@@ -58,23 +58,34 @@ void test_gl(void)
 }
 
 void test_con(void) {
-    //gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
-    //player_init(_WIDTH/2, _HEIGHT/2, 10, 10, _WIDTH, _HEIGHT);
-    //timer_delay(5);
+    sprite player;
+    player.x = 50;
+    player.y = 50;
+    player.hit_x_left = 0;
+    player.hit_x_right = 0;
+    player.hit_y_top = 0;
+    player.hit_y_bottom = 0;
+    player.hit_points = 100;
+    gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
+    player_init(&player);
     //printf("Time to play!\n");
-    //timer_delay(1);
     //gl_draw_rect(100, 100, 10, 10, GL_RED);
     controller_init(21);
     while(1) {
-        controller_poll();
-        
+        controller_poll(); 
         if (controller_get_JOYSTICK_X() == 119) {
-            player_move(10, 0);
-        } else if (controller_get_JOYSTICK_X() == 8) {
-            player_move(-10, 0);
+            player_move(&player, 10, 0);
+        } 
+        if (controller_get_JOYSTICK_X() == 8) {
+            player_move(&player, -10, 0);
         }
-        controller_get_inputs();
-        timer_delay(1);
+        if (controller_get_JOYSTICK_Y() == 119) {
+            player_move(&player, 0, -10);
+        }
+        if (controller_get_JOYSTICK_Y() == 8) {
+            player_move(&player, 0, 10);
+        }
+        timer_delay_ms(10);
     }
 }
 
@@ -92,7 +103,7 @@ void main(void)
     uart_init();
     timer_init();
     test_con(); 
-    test_gl();
+    //test_gl();
     //printf("\n%d\n", gpio_read(20));
     //printf("Game over! Come back soon!\n");
     uart_putchar(EOT);
