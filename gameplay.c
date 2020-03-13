@@ -84,13 +84,13 @@ void test_con(void) {
 
 void main(void)
 {
-    // uart_init();
-    // timer_init();
+    uart_init();
+    timer_init();
     // gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
 
     // printf("Time to play!\n");
     // //timer_delay(1);
-    // test_con();
+    test_con();
     // test_gl();
     // printf("Game over! Come back soon!\n");
     // uart_putchar(EOT);

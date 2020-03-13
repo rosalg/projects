@@ -8,7 +8,6 @@
 
 static volatile sprite box; 
 static sprite ball;
-<<<<<<< HEAD
 
 void player_init(sprite* player) {
     gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
@@ -22,10 +21,12 @@ void player_move(sprite* player, int x, int y) {
     gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
     gl_swap_buffer();
     gl_draw_rect(player->x - x, player->y - y, 10, 10, GL_BLACK);
-    gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
 }
 
- void move_ball(int x){
+static int move_forward = 5;
+static int move_back = 3;
+
+void move_ball(int x){
     int movement = 0;
     if (x == 1){
        movement = move_forward;
@@ -42,7 +43,7 @@ void player_move(sprite* player, int x, int y) {
     timer_delay(.1);
  }
 
-  void move_box(int x){
+void move_box(int x){
       int movement = 0;
     if (x == 1){
        movement = move_forward;
@@ -69,7 +70,7 @@ void player_draw_sprites(int box_move, int ball_move){ //Draw and move the sprit
     int wheel_radius = 15;
     box.hit_points = 100; 
     if((width/4 + box_move) > 0 && (width/4 + box_move) < (width -box_radius)){ //If the movement doesn't move the box out of bounds
-    box.x = width/4 + box_move; //Starting position = width/4, as player hits buttons the sprite moves
+        box.x = width/4 + box_move; //Starting position = width/4, as player hits buttons the sprite moves
     } 
     box.y = height - 200;
     box.hit_x_left = box.x;
