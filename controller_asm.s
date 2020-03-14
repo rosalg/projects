@@ -57,7 +57,7 @@ controller_asm_write:
 pulse:
 
     ldr r0, CLR0
-    mov r1, #(1 << 21)
+    mov r1, #(3 << 20)
     str r1, [r0]
     
     mov r2, r6

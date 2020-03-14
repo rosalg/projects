@@ -17,6 +17,41 @@
 #define _NROWS 30
 #define _NCOLS 20
 
+void update(void);
+
+static sprite player_1;
+static sprite player_2;
+
+void gameplay_init() {
+    player_1.x = 50;
+    player_1.y = 50;
+    player_1.hit_x_left = 0;
+    player_1.hit_x_right = 0;
+    player_1.hit_y_top = 0;
+    player_1.is_jumping = 0;
+    player_1.is_grounded = 1;
+    player_1.hit_y_bottom = 0;
+    player_1.hit_points = 100;
+    player_1.vel_x = 0;
+    player_1.vel_y = 0;
+
+    player_2.x = 100;
+    player_2.y = 100;
+
+    player_2.is_jumping = 0;
+    player_2.is_grounded = 0;
+
+    player_2.hit_x_left = 0;
+    player_2.hit_x_right = 0;
+    player_2.hit_y_top = 0;
+    player_2.hit_y_bottom = 0;
+    player_2.hit_points = 100;
+    player_2.vel_x = 0;
+    player_2.vel_y = 0;
+
+   
+}
+
 void test_gl(void)
 {
   int start_box_move = 0; 
@@ -42,35 +77,41 @@ void test_gl(void)
 }
 
 void test_con(void) {
-    sprite player;
-    player.x = 50;
-    player.y = 50;
-    player.hit_x_left = 0;
-    player.hit_x_right = 0;
-    player.hit_y_top = 0;
-    player.hit_y_bottom = 0;
-    player.hit_points = 100;
     gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
-    player_init(&player);
+    player_init(&player_1);
+    player_init(&player_2);
     //printf("Time to play!\n");
     //gl_draw_rect(100, 100, 10, 10, GL_RED);
-    controller_init(21);
+    controller_init(21, 20);
     while(1) {
-        controller_poll(); 
-        if (controller_get_JOYSTICK_X() == 119) {
-            player_move(&player, 10, 0);
-        } 
-        if (controller_get_JOYSTICK_X() == 8) {
-            player_move(&player, -10, 0);
-        }
-        if (controller_get_JOYSTICK_Y() == 119) {
-            player_move(&player, 0, -10);
-        }
-        if (controller_get_JOYSTICK_Y() == 8) {
-            player_move(&player, 0, 10);
-        }
-        timer_delay_ms(10);
+        //update();
+        printf("Polling");
+        controller_poll(1);
+        timer_delay(1);
+        controller_poll(2); 
+        controller_get_inputs();
+        timer_delay(1);
     }
+}
+
+void update() {
+    controller_poll(1); 
+    if (controller_get_JOYSTICK_X(1) == 119) {
+        player_1.vel_x = 10;
+    } 
+    if (controller_get_JOYSTICK_X(1) == 8) {
+        player_1.vel_x = -10;
+    }
+    if (controller_get_JOYSTICK_X(1) == 255 || controller_get_JOYSTICK_X(1) == 1) {
+        player_1.vel_x = 0;
+    }
+    if (controller_get_X(1) && player_1.is_grounded == 1 && player_1.is_jumping == 0) {
+        player_jump(&player_1);
+    }
+    if (player_1.is_jumping > 0) {
+        player_1.vel_y = -10;
+    }
+    player_move(&player_1, player_1.vel_x, player_1.vel_y);
 }
 
 /* TODO: Add tests to test your graphics library and console.
@@ -91,7 +132,7 @@ void main(void)
     // printf("Time to play!\n");
     // //timer_delay(1);
     test_con();
-    // test_gl();
+    //test_gl();
     // printf("Game over! Come back soon!\n");
     // uart_putchar(EOT);
 }

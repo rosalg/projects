@@ -15,12 +15,24 @@ void player_init(sprite* player) {
 }
 
 void player_move(sprite* player, int x, int y) {
+    // Draw new rectangle
     player->x += x;
     player->y += y;
-    printf("\nplayer.x: %d\n", player->x);
     gl_draw_rect(player->x, player->y, 10, 10, GL_RED);
+
+    // Erase previous rectangle
     gl_swap_buffer();
     gl_draw_rect(player->x - x, player->y - y, 10, 10, GL_BLACK);
+}
+
+void player_jump(sprite* player) {
+    player->is_jumping = 10;
+    player->is_grounded = 0;
+    player->vel_y = 10;
+}
+
+void player_shoot(sprite* player) {
+    return;
 }
 
 static int move_forward = 5;

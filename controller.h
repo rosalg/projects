@@ -44,50 +44,50 @@ typedef enum {
     CONTROLLER_RIGHT_TRIGGER_SB = 56,
 } controller_button_t;
 
-void controller_init(unsigned int data_gpio);
+void controller_init(unsigned int data_p1, unsigned int data_p2);
 
 void controller_asm_write(void); 
 
-void controller_read(void);
+void controller_read(int controller);
 
-void controller_poll(void);
+void controller_poll(int controller);
 
 void controller_get_inputs(void);
 
-int controller_get_A(void);
+int controller_get_A(int controller);
 
-int controller_get_B(void);
+int controller_get_B(int controller);
 
-int controller_get_X(void);
+int controller_get_X(int controller);
 
-int controller_get_Y(void);
+int controller_get_Y(int controller);
 
-int controller_get_START(void);
+int controller_get_START(int controller);
 
-int controller_get_L(void);
+int controller_get_L(int controller);
 
-int controller_get_R(void);
+int controller_get_R(int controller);
 
-int controller_get_Z(void);
+int controller_get_Z(int controller);
 
-int controller_get_D_UP(void);
+int controller_get_D_UP(int controller);
 
-int controller_get_D_DOWN(void);
+int controller_get_D_DOWN(int controller);
 
-int controller_get_D_LEFT(void);
+int controller_get_D_LEFT(int controller);
 
-int controller_get_D_RIGHT(void);
+int controller_get_D_RIGHT(int controller);
 
-int controller_get_LEFT_TRIGGER(void);
+int controller_get_LEFT_TRIGGER(int controller);
 
-int controller_get_RIGHT_TRIGGER(void);
+int controller_get_RIGHT_TRIGGER(int controller);
 
-int controller_get_JOYSTICK_X(void);
+int controller_get_JOYSTICK_X(int controller);
 
-int controller_get_JOYSTICK_Y(void);
+int controller_get_JOYSTICK_Y(int controller);
 
-int controller_get_CSTICK_X(void);
+int controller_get_CSTICK_X(int controller);
 
-int controller_get_CSTICK_Y(void);
+int controller_get_CSTICK_Y(int controller);
 
 #endif
