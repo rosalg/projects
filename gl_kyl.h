@@ -50,11 +50,11 @@ unsigned int gl_get_width(void);
 unsigned int gl_get_height(void);
 
 /*
-* Draw sprites and set up sprite struct instances
+* Draw sprites and draw a black box over their previous location.
 */
 
 
-void player_draw_sprites(int box_move, int ball_move);
+void player_draw_sprites(sprite* player, int x, int y);
 
 
 /*
@@ -81,7 +81,7 @@ void gl_draw_box(int x, int y, int box_r, int wheel_r);
  * If the box is hit (defined as the ball moving faster than the box on collision), then 
  reduce the box's hit points by 10.
  */
-void box_hit(void); 
+void box_hit(sprite* player1, sprite* player0); 
 
 
 /*
@@ -271,17 +271,16 @@ void gl_draw_circle(int x_center, int y_center, int radius, color_t c);
 
 
 /*
- * Draw a filled background with a platform of color platform and trees of color trees.
+ * Draw a filled background with a platform of color platform .
  * All pixels in the circle that lie within the bounds of the 
  * framebuffer are drawn. Any pixel that lies outside is clipped (i.e. not drawn).
  *
 
  * @param platform  the color of the platform
-  * @param trees  the color of the trees
 
  */
 
-void gl_draw_background(color_t platform, color_t trunk, color_t trees);
+void gl_draw_background(color_t platform);
 
 
 /*

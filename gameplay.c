@@ -19,26 +19,61 @@
 
 void test_gl(void)
 {
-  int start_box_move = 0; 
-  int start_ball_move = 0; 
-  int box_move = 0; 
-  int ball_move = 0; 
-    gl_init(_WIDTH, _HEIGHT, GL_DOUBLEBUFFER); 
-    player_draw_sprites(start_box_move, start_ball_move); //Draw the starting scene
-    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
-    gl_swap_buffer();
-    player_draw_sprites(start_box_move, start_ball_move);
-    gl_draw_background(GL_AMBER, GL_PURPLE, GL_RED);
-    gl_swap_buffer(); //Set up both buffers with the background
-   
-    while (sprites_hit() == 0){
-      move_ball(1);//1 means move forward, 0 means move back;
-  //    move_box(1); 
-      printf("%s\n", "move");
-    } 
-  //  gl_swap_buffer();
-    timer_delay(3);
-    // Show buffer with drawn contents
+    int width = gl_get_width();
+    int height = gl_get_height();
+
+    //Set up the background on both buffers
+    gl_draw_background(GL_PURPLE);
+    gl_swap_buffer(); 
+    gl_draw_background(GL_PURPLE);
+     gl_swap_buffer();  
+
+    //Set up the box
+    sprite box;
+    int box_radius = 80;
+    int wheel_radius = 15;
+    box.sprite_num = 1; 
+    box.hit_points = 100; 
+    box.x = width/4;
+    box.y = height - 200;
+    box.hit_x_left = box.x;
+    box.hit_x_right = box.x + box_radius;
+    box.hit_y_top = box.y;
+    box.hit_y_bottom = box.y + box_radius + wheel_radius;
+    player_init(&box);
+
+    //Set up the ball
+    sprite ball;
+    int ball_radius = 50; 
+    ball.sprite_num = 0; 
+    ball.hit_points = 100;
+    ball.x = width - (width/4 + 65);
+    ball.y = height - 155; 
+    ball.hit_x_left = ball.x - ball_radius;
+    ball.hit_x_right = ball.x + ball_radius;
+    ball.hit_y_top = ball.y + ball_radius/2;
+    ball.hit_y_bottom = ball.y - ball_radius/2;
+     player_init(&ball);
+
+//Set up one fireball off the scnree
+ int fireball_radius = 10;
+    sprite fire;
+    fire.sprite_num = 3;
+    fire.x = gl_get_height() + fireball_radius;
+    fire.y = gl_get_width() + fireball_radius;
+    fire.hit_x_right = fire.x + fireball_radius;
+    fire.hit_x_left = fire.x - fireball_radius;
+    fire.hit_y_top = fire.y + fireball_radius;
+    fire.hit_y_bottom= fire.y - fireball_radius;
+    player_init(&fire);
+    fireball(&ball, &fire);
+
+     for(int i = 0; i < 10; i++){
+      player_move(&box, 10*i, 0);
+      player_move(&ball, (-10*i), 0);
+      player_move(&fire, (-10*i), 0);
+      timer_delay_ms(100);
+     }
 }
 
 void test_con(void) {
@@ -86,12 +121,12 @@ void main(void)
 {
     uart_init();
     timer_init();
-    // gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
+     gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
 
     // printf("Time to play!\n");
     // //timer_delay(1);
-    test_con();
-    // test_gl();
+  //  test_con();
+    test_gl();
     // printf("Game over! Come back soon!\n");
-    // uart_putchar(EOT);
+     uart_putchar(EOT);
 }
