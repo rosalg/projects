@@ -170,76 +170,11 @@ void gl_draw_circle(int xc, int yc, int r, color_t c)
     } 
 } 
 
-// void gl_draw_sprites(int box_move, int ball_move){
-//     int width = gl_get_width();
-//     int height = gl_get_height();
-//     gl_draw_rect(0, height- 200, width, 100, GL_BLACK); //Cover any previous sprites with a black rectangle
-//     //Set up and draw the box
-//     int box_radius = 80;
-//     int wheel_radius = 15;
-//     box.hit_points = 100; 
-//     if((width/4 + box_move) > 0 && (width/4 + box_move) < (width -box_radius)){ //If the movement doesn't move the box out of bounds
-//     box.x = width/4 + box_move; //Starting position = width/4, as player hits buttons the sprite moves
-//     } 
-//     box.y = height - 200;
-//     box.hit_x_left = box.x;
-//     int hit_x_right = box.x + box_radius;
-//     int hit_y_top = box.y;
-//     int hit_y_bottom = box.y + box_radius + wheel_radius;
-//     gl_draw_box(box.x, box.y, box_radius, wheel_radius); //Draw the box
-    
-//     //set up and draw the ball 
-//     int ball_radius = 50; 
-//     int eye_radius = 5; 
-//     ball.hit_points = 100;
-//     if((width - (width/4 + 65) + ball_move) > 0 && (width - (width/4 + 65) + ball_move) < (width - ball_radius)){ //If the movement doesn't move the ball out of bounds, then move the ball
-//     ball.x = width - (width/4 + 65) + ball_move; //As player hits buttons the sprite moves by ball_move amount
-//    }
-//     ball.y = height - 150; 
-//     ball.hit_x_left = ball.x - ball_radius/2;
-//     ball.hit_x_right = ball.x + ball_radius/2;
-//     ball.hit_y_top = ball.y + ball_radius/2;
-//     ball.hit_y_bottom = ball.y - ball_radius/2;
-//     gl_draw_circle_sprite(ball.x, ball.y, ball_radius, eye_radius); //Draw the ball
-// }
-// void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r){
-//     gl_draw_circle(x, y, circle_r, GL_ORANGE);
-//     gl_draw_circle(x - 15, y - 15, eye_r, GL_BLACK);
-//     gl_draw_circle(x + 15, y - 15, eye_r, GL_BLACK);
-// }
 
-// void gl_draw_box(int x, int y, int box_r, int wheel_r){
-//     gl_draw_circle(x + wheel_r, y + box_r, wheel_r, GL_WHITE);
-//     gl_draw_circle(x + (wheel_r*4), y + box_r, wheel_r, GL_WHITE);
-//     gl_draw_rect(x, y, box_r, box_r, GL_BLUE);
-// }
 
-// bool sprites_hit(){
-//     if((ball.hit_y_top <= box.hit_y_top) && (ball.hit_y_bottom >= box.hit_y_bottom)){
-//         if (box.hit_x_right >= ball.hit_x_right >= box.hit_x_left || box.hit_x_right >= ball.hit_x_left >= box.hit_x_left){
-//             return true;
-//         }
-// }
-// else {
-//     return false;
-// }
-// }
-
-// void box_hit(){
-//     box.hit_points -= 10;
-// }
-// void ball_hit(){
-//     ball.hit_points -=10;
-// }
-
-void gl_draw_background(color_t platform, color_t trunk, color_t trees){
-    int tree_width = 10; 
+void gl_draw_background(color_t platform){
     int width = gl_get_width();
     gl_draw_rect(0, gl_get_height() - 100, width, 50, platform); //The platform
-    gl_draw_rect(width/6, 112, tree_width, 300, trunk); //Set a tree trunk at one end of the platform
-    gl_draw_rect(width - width/6, 112, tree_width, 300, trunk); //Set a tree trunk at the other end of the platform
-    gl_draw_circle(width/6 + tree_width/2, 112, 50, trees);
-    gl_draw_circle((width - width/6) + tree_width/2, 112, 50, trees);
 
 }
 
