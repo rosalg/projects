@@ -138,7 +138,7 @@
         gl_draw_rect(x, y, box_r, box_r, GL_BLUE);
     }
 
-    int sprites_hit(sprite* player1, sprite* player0){
+    int players_hit(sprite* player1, sprite* player0){
         
     if(player1->hit_y_bottom >= player0->hit_y_top){       
         if (((player0->hit_x_right >= player1->hit_x_right) &&  (player1->hit_x_right >= player0->hit_x_left))){
@@ -148,6 +148,23 @@
                 return 0;
             }
         }   
+    }
+
+
+int projectile_hit(sprite* player1, sprite* player0, sprite* projectile){
+    if((player1->hit_y_bottom >= projectile->hit_y_top) && (player1->hit_y_top >= projectile->hit_y_top)) {  
+        if (((player0->hit_x_right >= projectile->hit_x_right) &&  (player0->hit_x_left <= projectile->hit_x_left))){
+                return 1;
+            }  
+
+        else if (((player1->hit_x_right >= projectile->hit_x_right) &&  (player1->hit_x_left <= projectile->hit_x_left))){
+                 return 1;
+            }  
+        else {
+                return 0;
+            }
+        }
+    
     }
     // void box_hit(){
     //     box.hit_points -= 10;

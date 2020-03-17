@@ -53,4 +53,7 @@ void update_hit_box(sprite* _sprite);
 
 void player_projectile(sprite* p_sprite, sprite* projectile);
 
+//See if the projectiles on screen have impacted any sprites
+int projectile_hit(sprite* player1, sprite* player0, sprite*projectile);
+
 #endif
