@@ -6,21 +6,23 @@
 #include "gl_kyl.h"
 #include "player.h"
 #include "printf.h"
-
+#include "malloc.h"
     // static volatile sprite box; 
     // static sprite ball;
 
-    static sprite* sprites[4];
-    static int player_count = 0;
+    static char* sprites;
+    static int sprite_count = 0;
 
     void player_init(int n, ...) {
+        sprites = (char*)malloc(sizeof(sprite) *n);
+        sprite* (*_sprites)[sizeof(sprite)] = (sprite* (*)[sizeof(sprite)])sprites;
         va_list ap;
         va_start(ap, n);
-        player_count = n;
-        for (int i = 0; i < player_count; i++) {
-            sprite* _sprite = va_arg(ap, sprite*);        
+        sprite_count = n;
+        for (int i = 0; i < sprite_count; i++) {
+            sprite* _sprite = va_arg(ap, sprite*);    
             player_draw_sprites(_sprite);
-            sprites[i] = _sprite;
+            (*_sprites)[i] = _sprite;
         }
         gl_swap_buffer();
     }
@@ -41,28 +43,47 @@
     }*/
 
     void player_move(void) {
-        for (int i = 0; i < player_count; i++) {
-            sprites[i]->x += sprites[i]->vel_x;
-            sprites[i]->y += sprites[i]->vel_y;
-            update_hit_box(sprites[i]);
-            player_draw_sprites(sprites[i]);
+        sprite* (*_sprites)[sizeof(sprite)] = (sprite* (*)[sizeof(sprite)])sprites; 
+        for (int i = 0; i < sprite_count; i++) {
+            (*_sprites)[i]->x += (*_sprites)[i]->vel_x;
+            (*_sprites)[i]->y += (*_sprites)[i]->vel_y;
+            update_hit_box((*_sprites)[i]);
+            player_draw_sprites((*_sprites)[i]);
         }        
         gl_swap_buffer();
-        for (int i = 0; i < player_count; i++) 
-            gl_draw_rect(sprites[i]->x - sprites[i]->vel_x, sprites[i]->y - sprites[i]->vel_y, 100, 100, GL_BLACK);
+        
+        for (int i = 0; i < sprite_count; i++) {
+            if ((*_sprites)[i]->sprite_num == BOX) {
+                gl_draw_rect((*_sprites)[i]->x - (*_sprites)[i]->vel_x, (*_sprites)[i]->y - (*_sprites)[i]->vel_y, 100, 100, GL_BLACK);
+            } else if ((*_sprites)[i]->sprite_num == BALL) {
+                //TODO
+            } else if ((*_sprites)[i]->sprite_num == FIRE) {
+                gl_draw_rect((*_sprites)[i]->x - (*_sprites)[i]->vel_x - 10, (*_sprites)[i]->y - (*_sprites)[i]->vel_y - 10, 21, 21, GL_BLACK);
+            }
+        }
     }
 
-    void player_fireball(sprite* p_sprite, sprite* fire){ //Puts fireball at the position of the passed sprite
-        int fireball_radius = 10; 
-        fire->x = p_sprite->hit_x_right + fireball_radius *2;
-        fire->y = p_sprite->y;
-        fire->hit_x_right = fire->x + fireball_radius;
-        fire->hit_x_left = fire->x - fireball_radius;
-        fire->hit_y_top = fire->y + fireball_radius;
-        fire->hit_y_bottom= fire->y - fireball_radius;
-        player_draw_sprites(fire);
-        gl_swap_buffer();
-        player_draw_sprites(fire);
+    void player_projectile(sprite* p_sprite, sprite* projectile){ //Puts fireball at the position of the passed sprite
+        int fireball_radius = 10;
+        if (p_sprite->direction == RIGHT) {
+            projectile->x = p_sprite->hit_x_right + fireball_radius * 2;
+            projectile->vel_x = 20;
+            projectile->direction = RIGHT;
+        } else {
+            projectile->x = p_sprite->hit_x_left + fireball_radius * 2;
+            projectile->vel_x = -20;
+            projectile->direction = LEFT;
+        }
+        projectile->y = p_sprite->y + fireball_radius;
+        projectile->hit_x_right = projectile->x + fireball_radius;
+        projectile->hit_x_left = projectile->x - fireball_radius;
+        projectile->hit_y_top = projectile->y + fireball_radius;
+        projectile->hit_y_bottom= projectile->y - fireball_radius;
+        sprite_count++;
+        realloc(sprites, sizeof(sprite)*sprite_count);
+        sprite* (*_sprites)[sizeof(sprite)] = (sprite* (*)[sizeof(sprite)])sprites;
+        (*_sprites)[sprite_count - 1] = projectile;
+        p_sprite->is_firing = 1;
     }
 
 
@@ -82,19 +103,25 @@
         int fireball_radius = 10; 
 
         if (_sprite->hit_x_right <= gl_get_width() && _sprite->hit_x_left >= 0){ 
-            if(_sprite->sprite_num == 1){
+            if(_sprite->sprite_num == BOX){
                 gl_draw_box(_sprite->x, _sprite->y, box_radius, wheel_radius); //Draw the box
             } 
-            else if (_sprite->sprite_num == 0) {  
+            else if (_sprite->sprite_num == BALL) {  
                 gl_draw_circle_sprite(_sprite->x, _sprite->y, ball_radius, eye_radius);
             }
-            else {
+            else if (_sprite->sprite_num == FIRE) {
                 gl_draw_circle(_sprite->x, _sprite->y, fireball_radius, GL_RED);
             }
         } else{
-            if (_sprite->sprite_num == 1){ //If the fireball is moving outside of bounds, delete it
-                // gl_draw_rect(player->x - x - fireball_radius, player->y - y - fireball_radius, (fireball_radius * 2), (fireball_radius *2), GL_BLACK);
-                gl_draw_rect(_sprite->x, _sprite->y, (fireball_radius * 2), (fireball_radius *2), GL_BLACK);
+            if (_sprite->sprite_num == FIRE){ //If the fireball is moving outside of bounds, delete it
+                _sprite->owner->is_firing = 0;
+                gl_swap_buffer();
+                if (_sprite->direction == RIGHT) {
+                    gl_draw_rect(_sprite->x - 30, _sprite->y - 10, (fireball_radius * 2) + 1, (fireball_radius *2) + 1, GL_BLACK);
+                } else { 
+                    gl_draw_rect(_sprite->x + 30, _sprite->y + 10, (fireball_radius * 2) + 1, (fireball_radius *2) + 1, GL_BLACK);
+                }
+                sprite_count--;
             }      
         }
     }
@@ -127,4 +154,4 @@
     // }
     // void ball_hit(){
     //     ball.hit_points -=10;
-    // }
+    // }CK);GL_BLACK);

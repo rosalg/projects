@@ -41,12 +41,14 @@ void gameplay_init(int player_num) {
     static sprite p1_box;
     int box_radius = 80;
     int wheel_radius = 15;
-    p1_box.sprite_num = 1; 
+    p1_box.sprite_num = BOX; 
     p1_box.hit_points = 100; 
     p1_box.x = width/4;
     p1_box.y = height - 200;
     p1_box.is_grounded = 1;
     p1_box.is_jumping = 0;
+    p1_box.is_firing = 0;
+    p1_box.direction = RIGHT;
     p1_box.vel_x = 0;
     p1_box.vel_y = 0;
     p1_box.hit_x_left = p1_box.x;
@@ -59,12 +61,13 @@ void gameplay_init(int player_num) {
     
     //Set up the box2
     static sprite p2_box;
-    p2_box.sprite_num = 1; 
+    p2_box.sprite_num = BOX; 
     p2_box.hit_points = 100; 
     p2_box.x = 2*width/4;
     p2_box.y = height - 200;
     p2_box.is_grounded = 1;
     p2_box.is_jumping = 0;
+    p2_box.direction = LEFT;
     p2_box.vel_x = 0;
     p2_box.vel_y = 0;
     p2_box.hit_x_left = p2_box.x;
@@ -74,7 +77,7 @@ void gameplay_init(int player_num) {
     p2.sprite = &p2_box;
     p2.con_num = 2;
 
-
+    
 
     player_init(player_count, &p1_box, &p2_box);
 }
@@ -139,13 +142,13 @@ void test_gl(void)
 }
 
 void test_con(void) {
-    gameplay_init(2);
+    gameplay_init(1);
     //printf("Time to play!\n");
     //gl_draw_rect(100, 100, 10, 10, GL_RED);
     controller_init(21, 20);
     while(1) {
         update(p1);
-        update(p2);
+        //update(p2);
         player_move();
     }
 }
@@ -154,14 +157,22 @@ void update(player p) {
     controller_poll(p.con_num);
     if (controller_get_JOYSTICK_X(p.con_num) == 119) {
         p.sprite->vel_x = 10;
+        p.sprite->direction = RIGHT;
     } 
     if (controller_get_JOYSTICK_X(p.con_num) == 8) {
         p.sprite->vel_x = -10;
+        p.sprite->direction = LEFT;
     }
     if (controller_get_JOYSTICK_X(p.con_num) == 254 || controller_get_JOYSTICK_X(p.con_num) == 1) {
         p.sprite->vel_x = 0;
     }
     
+    if (controller_get_A(p.con_num) && p.sprite->is_firing == 0) {
+        static sprite fire;
+        fire.sprite_num = 3;
+        fire.owner = p.sprite;
+        player_projectile(p.sprite, &fire);
+    }
     if (p.sprite->is_grounded == 0 && p.sprite->hit_y_bottom >= GROUND) {
         p.sprite->is_grounded = 1;
         p.sprite->vel_y = 0;

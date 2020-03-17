@@ -233,7 +233,7 @@ void controller_get_inputs(void) {
     printf("Y Value: %d\n", bytes_1[CONTROLLER_Y]);
     printf("X Value: %d\n", bytes_1[CONTROLLER_X]);
     printf("B Value: %d\n", bytes_1[CONTROLLER_B]);
-    printf("A Value: %d\n", bytes_1[CONTROLLER_A]);
+    printf("A Value: %d\n", controller_get_A(1));
     printf("L Trigger: %d\n", bytes_1[CONTROLLER_L]);
     printf("R Trigger: %d\n", bytes_1[CONTROLLER_R]);
     printf("Z Value: %d\n", bytes_1[CONTROLLER_Z]);
