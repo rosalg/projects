@@ -19,7 +19,7 @@
 #include "player.h"
 
 
-
+typedef unsigned int color_t;
 typedef enum { GL_SINGLEBUFFER = FB_SINGLEBUFFER, GL_DOUBLEBUFFER = FB_DOUBLEBUFFER } gl_mode_t;
 
 /*
@@ -54,7 +54,7 @@ unsigned int gl_get_height(void);
 */
 
 
-void player_draw_sprites(sprite* player);
+void player_draw_sprites(sprite* _sprite);
 
 
 /*
@@ -75,7 +75,7 @@ void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r);
  * @param box_r  the radius of the box
   @param wheel_r  the radius of the wheel
  */
-void gl_draw_box(int x, int y, int box_r, int wheel_r);
+void gl_draw_box(int x, int y, int box_r, int wheel_r, color_t color);
 
 /*
  * If the box is hit (defined as the ball moving faster than the box on collision), then 
@@ -115,7 +115,6 @@ int sprites_hit();
  */
  void move_box(int x);
 
-typedef unsigned int color_t;
 
 /*
  * Define some common colors ...

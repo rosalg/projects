@@ -59,10 +59,10 @@ void gl_draw_pixel(int x, int y, color_t c)
         //If out of bounds
     }
     else {
-    unsigned int row_length = fb_get_pitch()/4; // length of each row in pixels (include any padding)
-    unsigned int (*im)[row_length] = fb_get_draw_buffer(); 
-    im[y][x] = c; //Set the pixel at the correct x and y to the the color c
-}
+        unsigned int row_length = fb_get_pitch()/4; // length of each row in pixels (include any padding)
+        unsigned int (*im)[row_length] = fb_get_draw_buffer();
+        im[y][x] = c; 
+    }
 }
 
 color_t gl_read_pixel(int x, int y)

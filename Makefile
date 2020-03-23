@@ -1,5 +1,5 @@
 APPLICATION = gameplay.bin
-MODULES = fb.o gl.o controller.o controller_asm.o player.o 
+MODULES = fb.o gl.o controller.o controller_asm.o player.o gameplay.o 
 
 CFLAGS = -I$(CS107E)/include -g -Wall -Og -std=c99 -ffreestanding 
 CFLAGS += -mapcs-frame -fno-omit-frame-pointer -mpoke-function-name -Wpointer-arith

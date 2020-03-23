@@ -12,168 +12,154 @@
 #include "controller.h"
 #include "player.h"
 #include "gameplay.h"
+#include "gameplay_internal.h"
+#include "malloc.h"
+#include "strings.h"
+#include "pi.h"
 
 #define _WIDTH 640
-#define _HEIGHT 512
+#define _HEIGHT 360
 
-#define _NROWS 30
-#define _NCOLS 20
-
-void update(player curr_player);
+#define NUMBER_OF_PLAYERS 2 
 
 static player p1;
 static player p2;
 //static player p3; 
 //static player p4;
-static int player_count;
+static int sprite_count;
 static int GROUND = 0;
+static sprite sprites[30];
+static int number_of_platforms = 0;
 
-void gameplay_init(int player_num) {
+void gameplay_init(void) {
+    uart_init();
+    timer_init();
+    gl_init(_WIDTH, _HEIGHT, GL_DOUBLEBUFFER);
     int width = gl_get_width();
     int height = gl_get_height();
     gl_draw_background(GL_PURPLE);
     gl_swap_buffer();
     gl_draw_background(GL_PURPLE);
 
-    player_count = player_num;
-
-    //Set up the box
-    static sprite p1_box;
-    int box_radius = 80;
-    int wheel_radius = 15;
-    p1_box.sprite_num = BOX; 
-    p1_box.hit_points = 100; 
-    p1_box.x = width/4;
-    p1_box.y = height - 200;
-    p1_box.is_grounded = 1;
-    p1_box.is_jumping = 0;
-    p1_box.is_firing = 0;
-    p1_box.direction = RIGHT;
-    p1_box.vel_x = 0;
-    p1_box.vel_y = 0;
-    p1_box.hit_x_left = p1_box.x;
-    p1_box.hit_x_right = p1_box.x + box_radius;
-    p1_box.hit_y_top = p1_box.y;
-    p1_box.hit_y_bottom = p1_box.y + box_radius + wheel_radius;
-    p1.sprite = &p1_box;
+    sprite_count = NUMBER_OF_PLAYERS;
+    make_sprite(1, BOX, width/4, height - 100 - BOX_WIDTH - BOX_FEET_RADIUS - 5, RIGHT, GL_BLUE);
+    
     p1.con_num = 1;
-    GROUND = p1_box.hit_y_bottom;
+    p1.sprite = &sprites[0];
     
     //Set up the box2
-    static sprite p2_box;
-    p2_box.sprite_num = BOX; 
-    p2_box.hit_points = 100; 
-    p2_box.x = 2*width/4;
-    p2_box.y = height - 200;
-    p2_box.is_grounded = 1;
-    p2_box.is_jumping = 0;
-    p2_box.direction = LEFT;
-    p2_box.vel_x = 0;
-    p2_box.vel_y = 0;
-    p2_box.hit_x_left = p2_box.x;
-    p2_box.hit_x_right = p2_box.x + box_radius;
-    p2_box.hit_y_top = p2_box.y;
-    p2_box.hit_y_bottom = p2_box.y + box_radius + wheel_radius;
-    p2.sprite = &p2_box;
-    p2.con_num = 2;
-
+    make_sprite(2, BOX, 2*width/4, height - 100 - 5 - BOX_WIDTH - BOX_FEET_RADIUS,  LEFT, GL_BLUE);
     
+    p2.con_num = 2;
+    p2.sprite = &sprites[1];
+    
+    GROUND = gl_get_height() - 105;
+    
+    make_platforms(gl_get_width()/2 - 50, gl_get_height()/2, 100, 10, GL_PURPLE);
 
-    player_init(player_count, &p1_box, &p2_box);
+    player_init(sprite_count, p1.sprite, p2.sprite);
 }
 
-void test_gl(void)
-{
-    int width = gl_get_width();
-    int height = gl_get_height();
-
-    //Set up the background on both buffers
-    gl_draw_background(GL_PURPLE);
-    gl_swap_buffer(); 
-    gl_draw_background(GL_PURPLE);
-     gl_swap_buffer();  
-
-    //Set up the box
-    sprite box;
-    int box_radius = 80;
-    int wheel_radius = 15;
-    box.sprite_num = 1; 
-    box.hit_points = 100; 
-    box.x = width/4;
-    box.y = height - 200;
-    box.hit_x_left = box.x;
-    box.hit_x_right = box.x + box_radius;
-    box.hit_y_top = box.y;
-    box.hit_y_bottom = box.y + box_radius + wheel_radius;
-    //player_init(&box);
-/*
-    //Set up the ball
-    sprite ball;
-    int ball_radius = 50; 
-    ball.sprite_num = 0; 
-    ball.hit_points = 100;
-    ball.x = width - (width/4 + 65);
-    ball.y = height - 155; 
-    ball.hit_x_left = ball.x - ball_radius;
-    ball.hit_x_right = ball.x + ball_radius;
-    ball.hit_y_top = ball.y + ball_radius/2;
-    ball.hit_y_bottom = ball.y - ball_radius/2;
-     player_init(&ball);
-
-//Set up one fireball off the scnree
- int fireball_radius = 10;
-    sprite fire;
-    fire.sprite_num = 3;
-    fire.x = gl_get_height() + fireball_radius;
-    fire.y = gl_get_width() + fireball_radius;
-    fire.hit_x_right = fire.x + fireball_radius;
-    fire.hit_x_left = fire.x - fireball_radius;
-    fire.hit_y_top = fire.y + fireball_radius;
-    fire.hit_y_bottom= fire.y - fireball_radius;
-    player_init(&fire);
-    player_fireball(&ball, &fire);
-*/
-     for(int i = 0; i < 10; i++){
-      //player_move(&box, 10*i, 0);
-      //player_move(&ball, (-10*i), 0);
-      //player_move(&fire, (-10*i), 0);
-      timer_delay_ms(100);
-     }
+void make_platforms(int x, int y, int width, int height, color_t color) {
+     number_of_platforms++;
+     sprite* platform = &sprites[3 + number_of_platforms];
+     platform->x = x;
+     platform->y = y;
+     platform->hit_x_left = platform->x;
+     platform->hit_x_right = platform->x + width;
+     platform->hit_y_top = platform->y;
+     platform->hit_y_bottom = platform->y + height;
+     gl_draw_rect(x, y, width, height, color);
+     gl_swap_buffer();
+     gl_draw_rect(x, y, width, height, color);
 }
 
-void test_con(void) {
-    gameplay_init(1);
-    //printf("Time to play!\n");
-    //gl_draw_rect(100, 100, 10, 10, GL_RED);
+int is_touching_platform(player p) {
+    for (int i = 4; i <= number_of_platforms; i++) {
+        if ((p.sprite->hit_y_top <= sprites[i].hit_y_bottom && p.sprite->hit_y_top >= sprites[i].hit_y_top) ||
+             (p.sprite->hit_y_bottom <= sprites[i].hit_y_bottom && p.sprite->hit_y_bottom >= sprites[i].hit_y_top)) {   
+            if ((p.sprite->hit_x_right <= sprites[i].hit_x_right && p.sprite->hit_x_right >= sprites[i].hit_x_left) || 
+                    (p.sprite->hit_x_left <= sprites[i].hit_x_right && p.sprite->hit_x_left >= sprites[i].hit_x_left)) {
+                return 1;
+            }
+            
+        }
+    }     
+    return 0;
+}
+
+void make_sprite(int p_num, int sprite_number, int x_start, int y_start, int direc, color_t color) {
+    sprite* player = &sprites[p_num - 1];
+    player->x = x_start;
+    player->y = y_start;
+    player->is_grounded = 1;
+    player->is_jumping = 0;
+    
+    player->is_firing = 0;
+    player->direction = direc;
+    player->proj_sprite_num = p_num + NUMBER_OF_PLAYERS - 1;
+    player->proj_cooldown = 0;
+
+    player->is_shielding = 0;
+    player->is_stunned = 0;
+    player->shield_timer = SHIELD_TIME;
+    
+    player->vel_x = 0;
+    player->vel_y = 0;
+    player->color = color;
+    player->base_color = color;
+    if (sprite_number == BOX) {
+        player->sprite_num = BOX; 
+        player->hit_points = 100; 
+        player->hit_x_left = player->x;
+        player->hit_x_right = player->x + BOX_WIDTH;
+        player->hit_y_top = player->y;
+        player->hit_y_bottom = player->y + BOX_WIDTH + BOX_FEET_RADIUS;
+    } else if (sprite_number == BALL) {
+        player->sprite_num = BALL; 
+        player->hit_points = 100;
+        player->hit_x_left = player->x - BALL_RADIUS;
+        player->hit_x_right = player->x + BALL_RADIUS;
+        player->hit_y_top = player->y - BALL_RADIUS;
+        player->hit_y_bottom = player->y + BALL_RADIUS;
+    }
+}
+
+int gameplay_get_sprite_count(void) {
+    return sprite_count;
+}
+
+void gameplay_set_sprite_count(int n) {
+    sprite_count = n;
+}
+
+void end_game(void) {
+    gl_clear(GL_BLACK);
+    char* player_winner= "Player 1 wins";
+    if (p1.sprite->hit_points <= 0) player_winner = "Player 2 wins";
+    gl_draw_string(gl_get_width()/2 - gl_get_char_width() * strlen("GAME OVER") / 2,gl_get_height()/2, "GAME OVER", GL_YELLOW);
+    gl_draw_string(gl_get_width()/2 - gl_get_char_width() * strlen(player_winner) / 2, gl_get_height()/2 + 20, player_winner, GL_YELLOW);
+    gl_swap_buffer();
+}
+
+void play_game(void) {
     controller_init(21, 20);
     while(1) {
         update(p1);
-        //update(p2);
-        player_move();
-    }
-}
-
-void update(player p) {
-    controller_poll(p.con_num);
-    if (controller_get_JOYSTICK_X(p.con_num) == 119) {
-        p.sprite->vel_x = 10;
-        p.sprite->direction = RIGHT;
-    } 
-    if (controller_get_JOYSTICK_X(p.con_num) == 8) {
-        p.sprite->vel_x = -10;
-        p.sprite->direction = LEFT;
-    }
-    if (controller_get_JOYSTICK_X(p.con_num) == 254 || controller_get_JOYSTICK_X(p.con_num) == 1) {
-        p.sprite->vel_x = 0;
+        if (NUMBER_OF_PLAYERS >= 2) {
+            update(p2); 
+        }
+        player_move(sprites);
+        if (p1.sprite->hit_points == 0 || p2.sprite->hit_points == 0) {
+            end_game();
+            break;
+        }
     }
     
-    if (controller_get_A(p.con_num) && p.sprite->is_firing == 0) {
-        static sprite fire;
-        fire.sprite_num = 3;
-        fire.owner = p.sprite;
-        player_projectile(p.sprite, &fire);
-    }
-    if (p.sprite->is_grounded == 0 && p.sprite->hit_y_bottom >= GROUND) {
+}
+
+void update_gravity(player p) {
+    if (p.sprite->is_grounded == 0 && (p.sprite->hit_y_bottom >= GROUND || is_touching_platform(p))) {
         p.sprite->is_grounded = 1;
         p.sprite->vel_y = 0;
     } else if (p.sprite->is_grounded == 0 && p.sprite->is_jumping == 0 && p.sprite->hit_y_bottom < GROUND) {
@@ -181,30 +167,83 @@ void update(player p) {
     } else if (p.sprite->is_jumping > 0) {
         p.sprite->is_jumping--;
     }
-    if (controller_get_X(p.con_num) && p.sprite->is_grounded == 1) {
-        player_jump(p.sprite);
-    }    
 }
 
-/* TODO: Add tests to test your graphics library and console.
-   For the graphics library, test both single & double
-   buffering and confirm all drawing is clipeed to bounds
-   of framebuffer
-   For the console, make sure to test wrap-around and scrolling.
-   Be sure to test each module separately as well as in combination
-   with others.
-*/
+void update_shielding(player p) {
+    if (p.sprite->is_grounded && (controller_get_L(p.con_num) || controller_get_R(p.con_num)) && p.sprite->shield_timer > 0) {
+        p.sprite->is_shielding = 1;
+        p.sprite->vel_x = 0;
+        p.sprite->shield_timer--;
+        p.sprite->color &= 0xFFFFFF00;
+        p.sprite->color |= (0xFF * p.sprite->shield_timer/SHIELD_TIME);
+        return;
+    } else if (p.sprite->shield_timer <= 0){
+        p.sprite->is_stunned = 1;
+        p.sprite->color = p.sprite->base_color;
+        p.sprite->is_shielding = 0;
+    } else {
+        p.sprite->color = p.sprite->base_color;
+        p.sprite->is_shielding = 0;
+        if (p.sprite->shield_timer < SHIELD_TIME) p.sprite->shield_timer++;
+    }
+}
+
+void update_horizontal_movement(player p) {
+    if (controller_get_JOYSTICK_X(p.con_num) == 119) {
+            p.sprite->vel_x = 10;
+            p.sprite->direction = RIGHT;
+        } 
+        if (controller_get_JOYSTICK_X(p.con_num) == 8) {
+            p.sprite->vel_x = -10;
+            p.sprite->direction = LEFT;
+        }
+        if (controller_get_JOYSTICK_X(p.con_num) == 254 || controller_get_JOYSTICK_X(p.con_num) == 1) {
+            p.sprite->vel_x = 0;
+        }
+}
+
+void update(player p) {
+    controller_poll(p.con_num);
+    update_gravity(p); 
+    // Update stun
+    if (p.sprite->is_stunned) {
+        p.sprite->vel_x = 0;
+        if (p.sprite->shield_timer == SHIELD_TIME) {
+            p.sprite->color = p.sprite->base_color;
+            p.sprite->is_stunned = 0;
+        } else {
+            if ((p.sprite->color&0xFF) == 0 && p.sprite->shield_timer % 5 == 0) {
+                p.sprite->color = p.sprite->base_color;
+            } else {
+                p.sprite->color = p.sprite->color & 0xFFFFFF00;
+            }
+            p.sprite->shield_timer++;
+            return;
+        }
+    }
+    update_horizontal_movement(p); 
+    update_shielding(p); 
+    //Update shoot
+    if (controller_get_A(p.con_num) && p.sprite->is_firing == 0 && (controller_get_JOYSTICK_X(p.con_num) == 119 || controller_get_JOYSTICK_X(p.con_num) == 8) && (p.sprite->proj_cooldown == 0)) {
+        p.sprite->proj_cooldown = PROJ_COOLDOWN;
+        sprite* fire = &sprites[p.sprite->proj_sprite_num];
+        fire->sprite_num = FIRE;
+        fire->owner = p.sprite;
+        fire->hit = 0;
+        player_projectile(p.sprite, fire);
+    } else if (p.sprite->proj_cooldown > 0) {
+        p.sprite->proj_cooldown--;
+    }
+    if ((controller_get_X(p.con_num) || controller_get_JOYSTICK_Y(p.con_num) == 119) && p.sprite->is_grounded == 1) {
+        player_jump(p.sprite);
+    }
+}
 
 void main(void)
 {
-    uart_init();
-    timer_init();
-    gl_init(_WIDTH, _HEIGHT, FB_DOUBLEBUFFER);
-
-    // printf("Time to play!\n");
-    // //timer_delay(1);
-    test_con();
-    //test_gl();
-    // printf("Game over! Come back soon!\n");
-     uart_putchar(EOT);
+    gameplay_init();
+    play_game();
+    timer_delay(5);
+    pi_reboot();
+    uart_putchar(EOT);
 }
