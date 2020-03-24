@@ -94,6 +94,51 @@ void player_projectile(sprite* p_sprite, sprite* projectile){
     p_sprite->is_firing = 1;
 }
 
+int punch (sprite* p_sprite, sprite* target_sprite){
+    if(p_sprite->direction == RIGHT){
+        gl_draw_rect(p_sprite->hit_x_right, p_sprite->hit_y_top+10, 30, 10, p_sprite->color);
+        if (punch_hit(p_sprite, target_sprite)){
+            return 1;
+        } else {
+            return 0;
+        }
+
+    }
+    else {
+        gl_draw_rect(p_sprite->hit_x_right, p_sprite->hit_y_top+10, 30, 10, p_sprite->color);
+          if (punch_hit(p_sprite, target_sprite)){
+            return 1;
+        } else {
+            return 0;
+        }
+
+
+    }
+}
+
+int punch_hit(sprite* p_sprite, sprite* target){
+         if(( ((target->hit_y_bottom >= p_sprite->hit_y_top + 10) && (target->hit_y_top <= p_sprite->hit_y_top + 10)) ||
+     ((target->hit_y_top <= p_sprite->hit_y_top + 20) && (target->hit_y_bottom >= p_sprite->hit_y_top+ 20 ))) && target->is_shielding == 0 ) {  
+            if(p_sprite->direction == RIGHT){
+        if ((p_sprite->hit_x_right <= target->hit_x_right) &&  (p_sprite->hit_x_right + 30 >= target->hit_x_left)){
+            return 1;
+        }  else if ((p_sprite->hit_x_left >= target->hit_x_right) &&  (p_sprite->hit_x_left <= target->hit_x_left)){
+            return 1;
+        }  else {
+            return 0;
+        }
+}
+} else {
+        if ((p_sprite->hit_x_right <= target->hit_x_right) &&  (p_sprite->hit_x_right >= target->hit_x_left)){
+                        return 1;
+        }  else if ((p_sprite->hit_x_left >= target->hit_x_right) &&  (p_sprite->hit_x_left + 30 <= target->hit_x_left)){
+            return 1;
+
+}
+}
+return 0;
+}
+
 
 
  void update_hit_box(sprite* _sprite){
@@ -164,6 +209,8 @@ int players_hit(sprite* player1, sprite* player0){
     }
     return 0;   
 }
+
+
 
 
 int projectile_hit(sprite* target, sprite* projectile){
