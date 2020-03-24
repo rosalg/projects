@@ -49,6 +49,16 @@ void update_shielding(player p);
 
 void make_platforms(int x, int y, int width, int height, color_t color);
 
-int is_touching_platform(player p);
+int any_sprite_is_moving(void);
+
+int should_draw_platform(sprite platform);
+
+void redraw_platforms();
+
+void draw_cursor(sprite* s);
+
+void update_menu(player p);
+
+color_t* color_select();
 
 #endif

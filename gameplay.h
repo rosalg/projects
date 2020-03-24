@@ -6,6 +6,7 @@
 typedef struct {
     sprite* sprite;
     int con_num;
+    int is_menuing;
 } player;
 
 typedef enum {
@@ -25,20 +26,19 @@ typedef enum {
     FIREBALL_RADIUS = 10,
 } projectiles;
 
-typedef struct {
-    int top;
-    int bot;
-    int left;
-    int right;
-} hitbox;
-
 typedef enum {
     SHIELD_TIME = 75,
     PROJ_COOLDOWN = 75,
+    TOP_RIGHT = 1,
+    TOP_LEFT = 2,
+    BOTTOM_RIGHT = 3,
+    BOTTOM_LEFT = 4,
 } values_t;
 
 int gameplay_get_sprite_count(void);
 
 void gameplay_set_sprite_count(int n);
+
+int is_touching_platform(player p);
 
 #endif

@@ -24,7 +24,7 @@ void player_init(int n, ...) {
 }
 
 void player_jump(sprite* _sprite) {
-    _sprite->is_jumping = 5;
+    _sprite->is_jumping = 10;
     _sprite->is_grounded = 0;
     _sprite->vel_y = -10;
 }
@@ -104,7 +104,7 @@ void player_projectile(sprite* p_sprite, sprite* projectile){
  }
 
 void player_draw_sprites(sprite* _sprite){ //Draw and move the sprites
-    if (_sprite->hit_x_right <= gl_get_width() && _sprite->hit_x_left >= 0 && _sprite->hit != 1){ 
+    if ((_sprite->hit_x_right <= gl_get_width() && _sprite->hit_x_left >= 0 && _sprite->hit != 1)){ 
         if(_sprite->sprite_num == BOX){
             gl_draw_box(_sprite->x, _sprite->y, BOX_WIDTH, BOX_FEET_RADIUS, _sprite->color); //Draw the box
         } 
@@ -124,14 +124,17 @@ void player_draw_sprites(sprite* _sprite){ //Draw and move the sprites
                 gl_draw_rect(_sprite->x + FIREBALL_RADIUS, _sprite->y - FIREBALL_RADIUS, (FIREBALL_RADIUS * 2) + 1, (FIREBALL_RADIUS * 2) + 1, GL_BLACK);
             }
             _sprite->x = 0;
-                _sprite->y = 0;
+            _sprite->y = 0;
+            _sprite->vel_x = 0;
+            _sprite->vel_y = 0;
+            gl_swap_buffer();
             }      
         }
     }
 
 void player_erase_sprites(sprite* _sprite) {
     if (_sprite->sprite_num == BOX) {
-        gl_draw_rect(_sprite->x - _sprite->vel_x, _sprite->y - _sprite->vel_y, BOX_WIDTH + BOX_FEET_RADIUS + 5, BOX_WIDTH + BOX_FEET_RADIUS + 5, GL_BLACK);
+        gl_draw_rect(_sprite->x - _sprite->vel_x, _sprite->y - _sprite->vel_y, BOX_WIDTH + BOX_FEET_RADIUS + 1, BOX_WIDTH + BOX_FEET_RADIUS + 1, GL_BLACK);
     } else if (_sprite->sprite_num == BALL) { 
         gl_draw_rect(_sprite->x - _sprite->vel_x - BALL_RADIUS, _sprite->y - _sprite->vel_y - BALL_RADIUS, BALL_RADIUS * 2 + 1, BALL_RADIUS * 2 + 1, GL_BLACK);
     } else if (_sprite->sprite_num == FIRE) {

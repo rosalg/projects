@@ -7,8 +7,8 @@
 typedef struct sprite {
     int x;
     int y;
-    int vel_x;
-    int vel_y;
+    volatile int vel_x;
+    volatile int vel_y;
     
     int is_jumping;
     int is_grounded;
