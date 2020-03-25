@@ -15,9 +15,9 @@ void player_init(int n, ...) {
     for (int i = 0; i < gameplay_get_sprite_count(); i++) {
         sprite* _sprite = va_arg(ap, sprite*);
         player_draw_sprites(_sprite);
-        gl_draw_rect(i * gl_get_width() - 100 * i, 0, _sprite->hit_points, 10, GL_YELLOW);
+        gl_draw_rect(i * gl_get_width() - 100 * i, 0, _sprite->hit_points, 10, _sprite->base_color);
         gl_swap_buffer();
-        gl_draw_rect(i * gl_get_width() - 100 * i, 0, _sprite->hit_points, 10, GL_YELLOW);
+        gl_draw_rect(i * gl_get_width() - 100 * i, 0, _sprite->hit_points, 10, _sprite->base_color);
         gl_swap_buffer();
     }
     gl_swap_buffer();
@@ -46,10 +46,10 @@ void player_move(sprite sprites[30]) {
                     proj->hit = 1;
                     sprites[1].hit_points -= 10;
                     gl_draw_rect(gl_get_width() - 100, 0, 100, 10, GL_BLACK);
-                    gl_draw_rect(gl_get_width() - sprites[1].hit_points, 0, sprites[1].hit_points, 10, GL_YELLOW);
+                    gl_draw_rect(gl_get_width() - sprites[1].hit_points, 0, sprites[1].hit_points, 10, sprites[i].base_color);
                     gl_swap_buffer();
                     gl_draw_rect(gl_get_width() - 100, 0, 100, 10, GL_BLACK);
-                    gl_draw_rect(gl_get_width() - sprites[1].hit_points, 0, sprites[1].hit_points, 10, GL_YELLOW);
+                    gl_draw_rect(gl_get_width() - sprites[1].hit_points, 0, sprites[1].hit_points, 10, sprites[i].base_color);
                     gl_swap_buffer();
                 }
             } else if (i == 1) {
@@ -57,10 +57,10 @@ void player_move(sprite sprites[30]) {
                     proj->hit = 1;
                     sprites[0].hit_points -= 10;
                     gl_draw_rect(0, 0, 100, 10, GL_BLACK);
-                    gl_draw_rect(0, 0, sprites[0].hit_points, 10, GL_YELLOW);
+                    gl_draw_rect(0, 0, sprites[0].hit_points, 10, sprites[i].base_color);
                     gl_swap_buffer();
                     gl_draw_rect(0, 0, 100, 10, GL_BLACK);
-                    gl_draw_rect(0, 0, sprites[0].hit_points, 10, GL_YELLOW);
+                    gl_draw_rect(0, 0, sprites[0].hit_points, 10, sprites[i].base_color);
                     gl_swap_buffer();
                 }
             }

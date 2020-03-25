@@ -6,7 +6,6 @@
 typedef struct {
     sprite* sprite;
     int con_num;
-    int is_menuing;
 } player;
 
 typedef enum {
@@ -25,6 +24,10 @@ typedef enum {
 typedef enum {
     FIREBALL_RADIUS = 10,
 } projectiles;
+
+typedef enum {
+    CURSOR_RADIUS = 5,
+} cursor_t;
 
 typedef enum {
     SHIELD_TIME = 75,

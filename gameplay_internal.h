@@ -14,7 +14,7 @@ PARAMS:
     color: Player's color
 
 */
-void make_sprite(int p_num, int sprite_number, int x_start, int y_start, int direc, color_t color);
+void make_sprite(int p_num, int sprite_number, int x_start, int y_start, int direc);
 
 
 /*
@@ -55,10 +55,10 @@ int should_draw_platform(sprite platform);
 
 void redraw_platforms();
 
-void draw_cursor(sprite* s);
+void draw_cursor(player p, color_t color);
 
 void update_menu(player p);
 
-color_t* color_select();
+void color_select();
 
 #endif

@@ -54,8 +54,9 @@ void controller_read(int controller) {
 }
 
 void controller_poll(int controller) {
+    int time = timer_get_ticks();
     controller_write();
-    while (gpio_read(controller + 19));
+    while (gpio_read(controller + 19) && timer_get_ticks() < time + 300);
     controller_read(controller);
 }
 

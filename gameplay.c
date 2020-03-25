@@ -35,12 +35,16 @@ void gameplay_init(void) {
     uart_init();
     timer_init();
     gl_init(_WIDTH, _HEIGHT, GL_DOUBLEBUFFER);
+    controller_init(21, 20);
     p1.con_num = 1;
     p1.sprite = &sprites[0];
     p2.con_num = 2;
     p2.sprite = &sprites[1];
-    //color_t *p;
-    //p = color_select();
+    
+    
+    color_select();
+    
+    
     int width = gl_get_width();
     int height = gl_get_height();
     gl_draw_background(GL_PURPLE);
@@ -48,11 +52,11 @@ void gameplay_init(void) {
     gl_draw_background(GL_PURPLE);
 
     sprite_count = NUMBER_OF_PLAYERS;
-    make_sprite(1, BOX, 10, height - 100 - BOX_WIDTH - BOX_FEET_RADIUS - 5, RIGHT, GL_RED);
+    make_sprite(1, BOX, 10, height - 100 - BOX_WIDTH - BOX_FEET_RADIUS - 5, RIGHT);
     
     
     //Set up the box2
-    make_sprite(2, BOX, width - BOX_WIDTH - 10, height - 100 - 5 - BOX_WIDTH - BOX_FEET_RADIUS,  LEFT, GL_BLUE);
+    make_sprite(2, BOX, width - BOX_WIDTH - 10, height - 100 - 5 - BOX_WIDTH - BOX_FEET_RADIUS,  LEFT);
     
     
     GROUND = gl_get_height() - 105;
@@ -64,10 +68,19 @@ void gameplay_init(void) {
     player_init(sprite_count, p1.sprite, p2.sprite);
 }
 
-color_t* color_select() {
-    p1.is_menuing = 1;
-    p2.is_menuing = 1;
-    static color_t p_colors[2];
+void color_select() {
+    char *str0 = "CHARACTER SELECT";
+    char *str1 = "Press A + X together to select your color";
+    char *str2 = "Press B + X together to deselect your color";
+    char *start_str = "Press START to begin";
+    int y = gl_get_char_height();
+    gl_draw_string(gl_get_width()/2 - strlen(str0) * gl_get_char_width()/2, 0, str0, GL_GREEN);
+    gl_draw_string(gl_get_width()/2 - strlen(str1) * gl_get_char_width()/2, y * 2, str1, GL_GREEN);
+    gl_draw_string(gl_get_width()/2 - strlen(str2) * gl_get_char_width()/2, y * 3, str2, GL_GREEN);
+    gl_swap_buffer();
+    gl_draw_string(gl_get_width()/2 - strlen(str0) * gl_get_char_width()/2, 0, str0, GL_GREEN);
+    gl_draw_string(gl_get_width()/2 - strlen(str1) * gl_get_char_width()/2, y * 2, str1, GL_GREEN);
+    gl_draw_string(gl_get_width()/2 - strlen(str2) * gl_get_char_width()/2, y * 3, str2, GL_GREEN);
     color_t colors[10]; 
     colors[0] = GL_RED; 
     colors[1] = GL_GREEN;
@@ -79,40 +92,60 @@ color_t* color_select() {
     colors[7] = GL_ORANGE;
     colors[8] = GL_PURPLE;
     colors[9] = GL_INDIGO;
-    p_colors[0] = 0;
-    p_colors[1] = 0;
-    sprites[0].x = gl_get_width()/2; sprites[1].x = gl_get_width()/2;
-    sprites[0].y = gl_get_height()/2; sprites[1].y = gl_get_height()/2;
-    sprites[0].vel_x = 0; sprites[1].vel_x = 0;
-    sprites[0].vel_y = 0; sprites[1].vel_y = 0; 
-    while(p_colors[0] == 0 && p_colors[1] == 0/* && (controller_get_START(1) == 0  && controller_get_START(2) == 0)*/) {
-        int x_pos = 70;
-        int y_pos = 30;
+    sprites[0].x = gl_get_width()/2;
+    sprites[1].x = gl_get_width()/2;
+    sprites[0].y = gl_get_height()/2;
+    sprites[1].y = gl_get_height()/2;
+    sprites[0].vel_x = 0;
+    sprites[1].vel_x = 0;
+    sprites[0].vel_y = 0;
+    sprites[1].vel_y = 0;
+    sprites[0].base_color = 0;
+    sprites[1].base_color = 0; 
+    while(sprites[0].base_color == 0 || sprites[1].base_color == 0 || (controller_get_START(p1.con_num) == 0 && controller_get_START(p2.con_num) == 0)) {
+        int x_pos = 270;
+        int y_pos = 135;
         int square_num = 0;
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 2; j++) {
-                gl_draw_rect(x_pos + i * 100, y_pos + j * 150, 100, 150, colors[square_num]);
+                gl_draw_rect(x_pos + i * 20, y_pos + j * 45, 20, 45, colors[square_num]);
                 square_num++;
             }
         }
-        printf("E");
-        controller_poll(p1.con_num);
-        printf("E");
         update_menu(p1);
-        //update(p2);
-        //draw_cursor(p1.sprite);
-        //draw_cursor(p2.sprite);
+        update_menu(p2);
+        draw_cursor(p1, GL_RED);
+        draw_cursor(p2, GL_BLUE);
+        if (sprites[0].base_color != 0 && sprites[1].base_color != 0) { 
+            gl_draw_string(gl_get_width()/2-gl_get_char_width()*strlen(start_str)/2, y_pos + 114, start_str, GL_GREEN);
+        } else {
+            gl_draw_rect( gl_get_width()/2-gl_get_char_width()*strlen(start_str)/2, y_pos + 114, gl_get_char_width()*strlen(start_str), gl_get_char_height(), GL_BLACK);
+        }
         gl_swap_buffer();
     }
-    p1.is_menuing = 0;
-    p2.is_menuing = 0;
-    return p_colors;
+    gl_clear(GL_BLACK);
+    gl_swap_buffer();
+    gl_clear(GL_BLACK);
 }
 
-void draw_cursor(sprite* s) {
-    s->x += s->vel_x;
-    s->y += s->vel_y;
-    gl_draw_circle(s->x, s->y, 10, GL_WHITE);
+void draw_cursor(player p, color_t color) {
+    sprite* s = p.sprite;
+    if (s->x + s->vel_x + CURSOR_RADIUS < 370 && s->x + s->vel_x - CURSOR_RADIUS > 270) {
+        if (s->y + s->vel_y + CURSOR_RADIUS < 225 && s->y + s->vel_y - CURSOR_RADIUS > 135) {
+            s->x += s->vel_x;
+            s->y += s->vel_y;
+         }
+    }
+    if (controller_get_A(p.con_num) && controller_get_X(p.con_num)) {
+        s->base_color = gl_read_pixel(s->x, s->y - CURSOR_RADIUS - 1);
+    }
+    if (controller_get_B(p.con_num) && controller_get_X(p.con_num)) {
+        s->base_color = 0;
+    }
+    gl_draw_circle(s->x, s->y, 5, GL_BLACK);
+    color_t curr = color;
+    if (s->base_color != 0) curr = s->base_color;
+    gl_draw_circle(s->x, s->y, 4, curr);
 }
 
 void make_platforms(int x, int y, int width, int height, color_t color) {
@@ -147,7 +180,7 @@ int should_draw_platform(sprite platform) {
     return 0;
 }
 
-void make_sprite(int p_num, int sprite_number, int x_start, int y_start, int direc, color_t color) {
+void make_sprite(int p_num, int sprite_number, int x_start, int y_start, int direc) {
     sprite* player = &sprites[p_num - 1];
     player->x = x_start;
     player->y = y_start;
@@ -165,8 +198,7 @@ void make_sprite(int p_num, int sprite_number, int x_start, int y_start, int dir
     
     player->vel_x = 0;
     player->vel_y = 0;
-    player->color = color;
-    player->base_color = color;
+    player->color = player->base_color;
     if (sprite_number == BOX) {
         player->sprite_num = BOX; 
         player->hit_points = 100; 
@@ -217,8 +249,7 @@ void countdown(){
 }
 
 void play_game(void) {
-    controller_init(21, 20);
-    //countdown();
+    countdown();
     while(1) {
         update(p1);
         if (NUMBER_OF_PLAYERS >= 2) {
@@ -272,17 +303,18 @@ void update(player p) {
 }
 
 void update_menu(player p) {
+    controller_poll(p.con_num);
     if (controller_get_JOYSTICK_X(p.con_num) == 119) {
-        p.sprite->vel_x = 10;
+        p.sprite->vel_x = 2;
     } else if (controller_get_JOYSTICK_X(p.con_num) == 8) {
-        p.sprite->vel_x = -10;
+        p.sprite->vel_x = -2;
     } else {
-        p.sprite->vel_y = 0;
+        p.sprite->vel_x = 0;
     }
     if (controller_get_JOYSTICK_Y(p.con_num) == 119) {
-        p.sprite->vel_y = 10;
+        p.sprite->vel_y = -2;
     } else if (controller_get_JOYSTICK_Y(p.con_num) == 8) {
-        p.sprite->vel_y = -10;
+        p.sprite->vel_y = 2;
     } else {
         p.sprite->vel_y = 0;
     }
