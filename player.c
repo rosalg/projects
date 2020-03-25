@@ -31,10 +31,11 @@ void player_jump(sprite* _sprite) {
 
 void player_move(sprite sprites[30]) {
     for (int i = 0; i < gameplay_get_sprite_count(); i++) {
-        if (sprites[i].x + sprites[i].vel_x >= gl_get_width() || sprites[i].x + sprites[i].vel_x <= 0) continue;
-        sprites[i].x += sprites[i].vel_x;
-        sprites[i].y += sprites[i].vel_y;
-        update_hit_box(&sprites[i]);
+        if (sprites[i].hit_x_right + sprites[i].vel_x <= gl_get_width() && sprites[i].x + sprites[i].vel_x >= 0) {
+            sprites[i].x += sprites[i].vel_x;
+            sprites[i].y += sprites[i].vel_y;
+            update_hit_box(&sprites[i]);
+        }
         player_draw_sprites(&sprites[i]);
         if (sprites[i].is_firing) {
             sprite* proj = &sprites[sprites[i].proj_sprite_num];
@@ -45,24 +46,14 @@ void player_move(sprite sprites[30]) {
                 if (projectile_hit(&sprites[1], proj)) {
                     proj->hit = 1;
                     sprites[1].hit_points -= 10;
-                    gl_draw_rect(gl_get_width() - 100, 0, 100, 10, GL_BLACK);
-                    gl_draw_rect(gl_get_width() - sprites[1].hit_points, 0, sprites[1].hit_points, 10, sprites[i].base_color);
-                    gl_swap_buffer();
-                    gl_draw_rect(gl_get_width() - 100, 0, 100, 10, GL_BLACK);
-                    gl_draw_rect(gl_get_width() - sprites[1].hit_points, 0, sprites[1].hit_points, 10, sprites[i].base_color);
-                    gl_swap_buffer();
+                    player_redraw_health_bar(gl_get_width() - 100, 0, gl_get_width() - sprites[1].hit_points, 0, sprites[1]);
                 }
             } else if (i == 1) {
                 if (projectile_hit(&sprites[0], proj)) {
                     proj->hit = 1;
                     sprites[0].hit_points -= 10;
-                    gl_draw_rect(0, 0, 100, 10, GL_BLACK);
-                    gl_draw_rect(0, 0, sprites[0].hit_points, 10, sprites[i].base_color);
-                    gl_swap_buffer();
-                    gl_draw_rect(0, 0, 100, 10, GL_BLACK);
-                    gl_draw_rect(0, 0, sprites[0].hit_points, 10, sprites[i].base_color);
-                    gl_swap_buffer();
-                }
+                    player_redraw_health_bar(0, 0, 0, 0, sprites[0]);
+                }                   
             }
             player_draw_sprites(proj);
         }
@@ -74,6 +65,15 @@ void player_move(sprite sprites[30]) {
             player_erase_sprites(&sprites[sprites[i].proj_sprite_num]);
         }
     } 
+}
+
+void player_redraw_health_bar(int x, int y, int x2, int y2, sprite _sprite) {
+    gl_draw_rect(x, y, 100, 10, GL_BLACK);
+    gl_draw_rect(x2, y2, _sprite.hit_points, 10, _sprite.base_color);
+    gl_swap_buffer();
+    gl_draw_rect(x, y, 100, 10, GL_BLACK);
+    gl_draw_rect(x2, y2, _sprite.hit_points, 10, _sprite.base_color);
+    gl_swap_buffer();
 }
 
 void player_projectile(sprite* p_sprite, sprite* projectile){
@@ -94,51 +94,41 @@ void player_projectile(sprite* p_sprite, sprite* projectile){
     p_sprite->is_firing = 1;
 }
 
-int punch (sprite* p_sprite, sprite* target_sprite){
-    if(p_sprite->direction == RIGHT){
-        gl_draw_rect(p_sprite->hit_x_right, p_sprite->hit_y_top+10, 30, 10, p_sprite->color);
-        if (punch_hit(p_sprite, target_sprite)){
-            return 1;
-        } else {
-            return 0;
-        }
-
-    }
-    else {
-        gl_draw_rect(p_sprite->hit_x_right, p_sprite->hit_y_top+10, 30, 10, p_sprite->color);
-          if (punch_hit(p_sprite, target_sprite)){
-            return 1;
-        } else {
-            return 0;
-        }
-
-
+int player_punch(sprite* p_sprite, sprite* target_sprite){
+    if (punch_hit(p_sprite, target_sprite)){
+        return 1;
+    } else {
+        return 0;
     }
 }
-
+   
 int punch_hit(sprite* p_sprite, sprite* target){
-         if(( ((target->hit_y_bottom >= p_sprite->hit_y_top + 10) && (target->hit_y_top <= p_sprite->hit_y_top + 10)) ||
-     ((target->hit_y_top <= p_sprite->hit_y_top + 20) && (target->hit_y_bottom >= p_sprite->hit_y_top+ 20 ))) && target->is_shielding == 0 ) {  
-            if(p_sprite->direction == RIGHT){
-        if ((p_sprite->hit_x_right <= target->hit_x_right) &&  (p_sprite->hit_x_right + 30 >= target->hit_x_left)){
-            return 1;
-        }  else if ((p_sprite->hit_x_left >= target->hit_x_right) &&  (p_sprite->hit_x_left <= target->hit_x_left)){
-            return 1;
-        }  else {
-            return 0;
-        }
-}
-} else {
-        if ((p_sprite->hit_x_right <= target->hit_x_right) &&  (p_sprite->hit_x_right >= target->hit_x_left)){
-                        return 1;
-        }  else if ((p_sprite->hit_x_left >= target->hit_x_right) &&  (p_sprite->hit_x_left + 30 <= target->hit_x_left)){
-            return 1;
+    int PLAYER_FIST_TOP = p_sprite->hit_y_top + BOX_HEIGHT/4;
+    int PLAYER_FIST_BOTTOM = p_sprite->hit_y_top + BOX_HEIGHT/4 + BOX_HEIGHT; 
 
+    if(( ((target->hit_y_bottom >= PLAYER_FIST_TOP) && (target->hit_y_top <= PLAYER_FIST_TOP)) || 
+                ((target->hit_y_top <= PLAYER_FIST_BOTTOM) && (target->hit_y_bottom >= PLAYER_FIST_BOTTOM))) 
+                && target->is_shielding == 0 ) {  
+        if(p_sprite->direction == RIGHT){
+            if ((p_sprite->hit_x_right + BOX_ARM_WIDTH <= target->hit_x_right) &&  (p_sprite->hit_x_right + BOX_ARM_WIDTH >= target->hit_x_left)){
+                return 1;
+            }  else if ((p_sprite->hit_x_right >= target->hit_x_right) && (p_sprite->hit_x_right <= target->hit_x_left)){
+                return 1;
+            }  else {
+                return 0;
+            }
+        } else {
+            if ((p_sprite->hit_x_left - BOX_ARM_WIDTH <= target->hit_x_right) &&  (p_sprite->hit_x_left - BOX_ARM_WIDTH >= target->hit_x_left)){
+                return 1;
+            }  else if ((p_sprite->hit_x_left <= target->hit_x_right) &&  (p_sprite->hit_x_left >= target->hit_x_left)){
+                return 1;
+            }
+        }   
+    } else if (target->is_shielding == 1) {
+        target->shield_timer -= 10;
+    }
+    return 0;
 }
-}
-return 0;
-}
-
 
 
  void update_hit_box(sprite* _sprite){
@@ -152,6 +142,13 @@ void player_draw_sprites(sprite* _sprite){ //Draw and move the sprites
     if ((_sprite->hit_x_right <= gl_get_width() && _sprite->hit_x_left >= 0 && _sprite->hit != 1)){ 
         if(_sprite->sprite_num == BOX){
             gl_draw_box(_sprite->x, _sprite->y, BOX_WIDTH, BOX_FEET_RADIUS, _sprite->color); //Draw the box
+            if (_sprite->is_punching >= 2 * PUNCH_COOLDOWN / 3) {
+                if (_sprite->direction == RIGHT) {
+                    gl_draw_rect(_sprite->hit_x_right, _sprite->hit_y_top + BOX_HEIGHT/4, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, _sprite->base_color);
+                } else {  
+                    gl_draw_rect(_sprite->hit_x_left - BOX_ARM_WIDTH, _sprite->hit_y_top + BOX_HEIGHT/4, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, _sprite->base_color);
+                }
+            }
         } 
         else if (_sprite->sprite_num == BALL) {  
             gl_draw_circle_sprite(_sprite->x, _sprite->y, BALL_RADIUS, EYE_RADIUS);
@@ -173,13 +170,18 @@ void player_draw_sprites(sprite* _sprite){ //Draw and move the sprites
             _sprite->vel_x = 0;
             _sprite->vel_y = 0;
             gl_swap_buffer();
-            }      
-        }
+        }      
     }
+}
 
 void player_erase_sprites(sprite* _sprite) {
     if (_sprite->sprite_num == BOX) {
-        gl_draw_rect(_sprite->x - _sprite->vel_x, _sprite->y - _sprite->vel_y, BOX_WIDTH + BOX_FEET_RADIUS + 1, BOX_WIDTH + BOX_FEET_RADIUS + 1, GL_BLACK);
+        gl_draw_rect(_sprite->x - _sprite->vel_x, _sprite->y - _sprite->vel_y, BOX_WIDTH + BOX_FEET_RADIUS+1, BOX_WIDTH + BOX_FEET_RADIUS + 1, GL_BLACK);
+        //if (_sprite->direction == LEFT) { 
+                gl_draw_rect(_sprite->hit_x_left - _sprite->vel_x - BOX_ARM_WIDTH, _sprite->hit_y_top - _sprite->vel_y + BOX_HEIGHT/4, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, GL_BLACK);
+        //} else {
+                gl_draw_rect(_sprite->hit_x_right - _sprite->vel_x, _sprite->hit_y_top - _sprite->vel_y + BOX_HEIGHT/4, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, GL_BLACK);
+        //}
     } else if (_sprite->sprite_num == BALL) { 
         gl_draw_rect(_sprite->x - _sprite->vel_x - BALL_RADIUS, _sprite->y - _sprite->vel_y - BALL_RADIUS, BALL_RADIUS * 2 + 1, BALL_RADIUS * 2 + 1, GL_BLACK);
     } else if (_sprite->sprite_num == FIRE) {
@@ -223,6 +225,8 @@ int projectile_hit(sprite* target, sprite* projectile){
         }  else {
             return 0;
         }
+    } else if (target->is_shielding) {
+        target->shield_timer -= 2;
     }
     return 0;
 }

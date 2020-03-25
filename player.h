@@ -17,6 +17,9 @@ typedef struct sprite {
     int is_stunned;
     int shield_timer;
 
+    int is_punching;
+    int knockback_timer;
+
     int proj_sprite_num;
     int hit;
     int is_firing;
@@ -41,8 +44,9 @@ typedef enum {
 } sprite_nums;
 
 typedef enum {
-    LEFT = 0,
+    LEFT = -1,
     RIGHT = 1,
+    NONE = 0,
 } directions;
 
 //void player_init(sprite* player);
@@ -68,9 +72,10 @@ void player_projectile(sprite* p_sprite, sprite* projectile);
 //See if the projectiles on screen have impacted any sprites
 int projectile_hit(sprite* target, sprite* projectile);
 
-int punch (sprite* p_sprite, sprite* target_sprite);
+int player_punch(sprite* p_sprite, sprite* target_sprite);
 
 int punch_hit(sprite* p_sprite, sprite* target_sprite);
 
+void player_redraw_health_bar(int x, int y, int x2, int y2, sprite _sprite);
 
 #endif

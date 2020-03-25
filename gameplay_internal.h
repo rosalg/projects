@@ -61,4 +61,6 @@ void update_menu(player p);
 
 void color_select();
 
+void update_punch(player p);
+
 #endif

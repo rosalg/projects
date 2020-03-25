@@ -13,6 +13,8 @@ typedef enum {
     BOX_WIDTH = 32,
     // BOX FEET_RADIUS SHOULD BE 3/16 OF BOX_HEIGHT
     BOX_FEET_RADIUS = 6,
+    BOX_ARM_WIDTH = 20,
+    BOX_ARM_HEIGHT = 10,
 } box;
 
 typedef enum {
@@ -32,6 +34,9 @@ typedef enum {
 typedef enum {
     SHIELD_TIME = 75,
     PROJ_COOLDOWN = 75,
+    PUNCH_COOLDOWN = 6,
+    PUNCH_DAMAGE = 5,
+    PUNCH_KNOCKBACK_TIME = 3,
     TOP_RIGHT = 1,
     TOP_LEFT = 2,
     BOTTOM_RIGHT = 3,
