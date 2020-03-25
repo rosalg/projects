@@ -68,4 +68,9 @@ void player_projectile(sprite* p_sprite, sprite* projectile);
 //See if the projectiles on screen have impacted any sprites
 int projectile_hit(sprite* target, sprite* projectile);
 
+int punch (sprite* p_sprite, sprite* target_sprite);
+
+int punch_hit(sprite* p_sprite, sprite* target_sprite);
+
+
 #endif
