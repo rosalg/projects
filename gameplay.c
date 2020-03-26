@@ -32,19 +32,20 @@ static sprite sprites[30];
 static int number_of_platforms = 0;
 
 void gameplay_init(void) {
-    uart_init();
-    timer_init();
-    gl_init(_WIDTH, _HEIGHT, GL_DOUBLEBUFFER);
-    controller_init(21, 20);
     p1.con_num = 1;
     p1.sprite = &sprites[0];
+    p1.color_num = 4;
     p2.con_num = 2;
     p2.sprite = &sprites[1];
-    
+    p2.color_num = 4;
+
+
     p1.sprite->base_color = GL_BLUE;
     p2.sprite->base_color = GL_RED;
     
-    color_select();
+    p1.sprite->sprite_num = 0;
+    p2.sprite->sprite_num = 0; 
+    character_select();
      
     
     int width = gl_get_width();
@@ -54,11 +55,13 @@ void gameplay_init(void) {
     gl_draw_background(GL_PURPLE);
 
     sprite_count = NUMBER_OF_PLAYERS;
-    make_sprite(1, BOX, 10, height - 100 - BOX_WIDTH - BOX_FEET_RADIUS - 5, RIGHT);
+
+    // Set up player 1's sprite
+    make_sprite(p1.con_num, p1.sprite->sprite_num, 100, height - 100, RIGHT);
     
     
-    //Set up the box2
-    make_sprite(2, BOX, width - BOX_WIDTH - 10, height - 100 - 5 - BOX_WIDTH - BOX_FEET_RADIUS,  LEFT);
+    // Set up player 2's sprite
+    make_sprite(p2.con_num, p2.sprite->sprite_num, width, height - 100,  LEFT);
     
     
     GROUND = gl_get_height() - 105;
@@ -70,30 +73,30 @@ void gameplay_init(void) {
     player_init(sprite_count, p1.sprite, p2.sprite);
 }
 
-void color_select() {
+void character_select() {
     char *str0 = "CHARACTER SELECT";
-    char *str1 = "Press A + X together to select your color";
-    char *str2 = "Press B + X together to deselect your color";
+    char *str1 = "Press A & X together to select character";
+    char *str2 = "Press B & X together to deselect character";
+    char *str3 = "Press L & R to cycle between colors";
     char *start_str = "Press START to begin";
     int y = gl_get_char_height();
+    gl_draw_string(gl_get_width()/4 - strlen("Player 1") * gl_get_char_width()/2, 260, "Player 1", GL_GREEN);
+    gl_draw_string(3 * gl_get_width() / 4 - strlen("Player 2") * gl_get_char_width() / 2, 260, "Player 2", GL_GREEN);
     gl_draw_string(gl_get_width()/2 - strlen(str0) * gl_get_char_width()/2, 0, str0, GL_GREEN);
     gl_draw_string(gl_get_width()/2 - strlen(str1) * gl_get_char_width()/2, y * 2, str1, GL_GREEN);
     gl_draw_string(gl_get_width()/2 - strlen(str2) * gl_get_char_width()/2, y * 3, str2, GL_GREEN);
+    gl_draw_string(gl_get_width()/2 - strlen(str3) * gl_get_char_width()/2, y * 4, str3, GL_GREEN);
+    gl_draw_rect(0, 260 + gl_get_char_height(), gl_get_width()/2, gl_get_height() - 260 - gl_get_char_height(), GL_BLUE);
+    gl_draw_rect(gl_get_width() / 2, 260 + gl_get_char_height(), gl_get_width()/2, gl_get_height() - 260 - gl_get_char_height(), GL_RED);
     gl_swap_buffer();
+    gl_draw_string(gl_get_width()/4 - strlen("Player 1") * gl_get_char_width()/2, 260, "Player 1", GL_GREEN);
+    gl_draw_string(3 * gl_get_width() / 4 - strlen("Player 2") * gl_get_char_width() / 2, 260, "Player 2", GL_GREEN);
     gl_draw_string(gl_get_width()/2 - strlen(str0) * gl_get_char_width()/2, 0, str0, GL_GREEN);
     gl_draw_string(gl_get_width()/2 - strlen(str1) * gl_get_char_width()/2, y * 2, str1, GL_GREEN);
     gl_draw_string(gl_get_width()/2 - strlen(str2) * gl_get_char_width()/2, y * 3, str2, GL_GREEN);
-    color_t colors[10]; 
-    colors[0] = GL_RED; 
-    colors[1] = GL_GREEN;
-    colors[2] = GL_BLUE;
-    colors[3] = GL_CYAN;
-    colors[4] = GL_MAGENTA;
-    colors[5] = GL_YELLOW;
-    colors[6] = GL_AMBER;
-    colors[7] = GL_ORANGE;
-    colors[8] = GL_PURPLE;
-    colors[9] = GL_INDIGO;
+    gl_draw_string(gl_get_width()/2 - strlen(str3) * gl_get_char_width()/2, y * 4, str3, GL_GREEN);
+    gl_draw_rect(0, 260 + gl_get_char_height(), gl_get_width()/2, gl_get_height() - 260 - gl_get_char_height(), GL_BLUE);
+    gl_draw_rect(gl_get_width() / 2, 260 + gl_get_char_height(), gl_get_width()/2, gl_get_height() - 260 - gl_get_char_height(), GL_RED); 
     sprites[0].x = gl_get_width()/2;
     sprites[1].x = gl_get_width()/2;
     sprites[0].y = gl_get_height()/2;
@@ -103,25 +106,31 @@ void color_select() {
     sprites[0].vel_y = 0;
     sprites[1].vel_y = 0;
     sprites[0].base_color = 0;
-    sprites[1].base_color = 0; 
-    while(sprites[0].base_color == 0 || sprites[1].base_color == 0 || (controller_get_START(p1.con_num) == 0 && controller_get_START(p2.con_num) == 0)) {
+    sprites[1].base_color = 0;
+    while(p1.sprite->base_color == 0 || p2.sprite->base_color == 0 || p1.sprite->sprite_num == 0 || p2.sprite->sprite_num == 0 ||
+            (controller_get_START(p1.con_num) == 0 && controller_get_START(p2.con_num) == 0))
+   
+    {
         int x_pos = 270;
         int y_pos = 135;
         int square_num = 0;
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 2; j++) {
-                gl_draw_rect(x_pos + i * 20, y_pos + j * 45, 20, 45, colors[square_num]);
+        for (int i = 0; i < 2; i++) {
+                gl_draw_rect(x_pos + i * 50, y_pos, 50, 90, 0xFFA9A9A9);
+                if (i) {
+                    gl_draw_circle_sprite(x_pos+75, y_pos+45, BALL_RADIUS, EYE_RADIUS, GL_BLACK); 
+                } else {
+                    gl_draw_box(x_pos+25-BOX_WIDTH/2, y_pos+45-BOX_HEIGHT/2-BOX_FEET_RADIUS/2, BOX_WIDTH, BOX_FEET_RADIUS, GL_BLACK);
+                }
                 square_num++;
-            }
         }
         update_menu(p1);
         update_menu(p2);
-        draw_cursor(p1, GL_WHITE);
-        draw_cursor(p2, GL_WHITE);
-        if (sprites[0].base_color != 0 && sprites[1].base_color != 0) { 
-            gl_draw_string(gl_get_width()/2-gl_get_char_width()*strlen(start_str)/2, y_pos + 114, start_str, GL_GREEN);
+        draw_cursor(&p1, GL_BLUE);
+        draw_cursor(&p2, GL_RED);
+        if (p1.sprite->sprite_num != 0 && p2.sprite->sprite_num != 0) { 
+            gl_draw_string(gl_get_width()/2-gl_get_char_width()*strlen(start_str)/2, y_pos + 100, start_str, GL_GREEN);
         } else {
-            gl_draw_rect( gl_get_width()/2-gl_get_char_width()*strlen(start_str)/2, y_pos + 114, gl_get_char_width()*strlen(start_str), gl_get_char_height(), GL_BLACK);
+            gl_draw_rect(gl_get_width()/2-gl_get_char_width()*strlen(start_str)/2, y_pos + 100, gl_get_char_width()*strlen(start_str), gl_get_char_height(), GL_BLACK);
         }
         gl_swap_buffer();
     }
@@ -130,24 +139,70 @@ void color_select() {
     gl_clear(GL_BLACK);
 }
 
-void draw_cursor(player p, color_t color) {
-    sprite* s = p.sprite;
+void draw_cursor(player* p, color_t color) {
+    color_t colors[10]; 
+    colors[0] = GL_RED; colors[1] = GL_GREEN; colors[2] = GL_BLUE; colors[3] = GL_CYAN; colors[4] = GL_MAGENTA;
+    colors[5] = GL_YELLOW; colors[6] = GL_AMBER; colors[7] = GL_ORANGE; colors[8] = GL_PURPLE; colors[9] = GL_INDIGO;
+    
+    sprite* s = p->sprite;
     if (s->x + s->vel_x + CURSOR_RADIUS < 370 && s->x + s->vel_x - CURSOR_RADIUS > 270) {
         if (s->y + s->vel_y + CURSOR_RADIUS < 225 && s->y + s->vel_y - CURSOR_RADIUS > 135) {
             s->x += s->vel_x;
             s->y += s->vel_y;
          }
     }
-    if (controller_get_A(p.con_num) && controller_get_X(p.con_num)) {
-        s->base_color = gl_read_pixel(s->x, s->y - CURSOR_RADIUS - 1);
+
+    if (controller_get_A(p->con_num) && controller_get_X(p->con_num)) {
+        if (s->x > 270 && s->x < 320) {
+            s->sprite_num = BOX;
+        } else {
+            s->sprite_num = BALL;
+        }
     }
-    if (controller_get_B(p.con_num) && controller_get_X(p.con_num)) {
-        s->base_color = 0;
+   
+    if (controller_get_L(p->con_num)) {
+        if (p->color_num > 0) {
+            p->color_num = p->color_num - 1;
+        } else {
+            p->color_num = 9;
+        }
+    } else if (controller_get_R(p->con_num)) {
+        if (p->color_num < 9) {
+            p->color_num++;
+        } else {
+            p->color_num = 0;
+        }
     }
+
+    if (s->sprite_num != 0) {
+        if (p->con_num == 1) {
+            if (s->sprite_num == BOX) {
+                gl_draw_rect(gl_get_width()/4 - BALL_RADIUS, 260 + gl_get_char_height() + 25, 50, 50, GL_BLUE);
+                gl_draw_box(gl_get_width()/4 - BOX_WIDTH/2, 260 + gl_get_char_height() + 25, BOX_WIDTH, BOX_FEET_RADIUS, colors[p->color_num]);
+            } else {
+                gl_draw_rect(gl_get_width()/4 - BALL_RADIUS, 260 + gl_get_char_height() + 25, 50, 50, GL_BLUE);
+                gl_draw_circle_sprite(gl_get_width()/4, 260 + gl_get_char_height() + 45, BALL_RADIUS, EYE_RADIUS, colors[p->color_num]);  
+            }
+        } else {
+           if (s->sprite_num == BOX) {
+                gl_draw_rect(3*gl_get_width()/4 - BALL_RADIUS, 260 + gl_get_char_height() + 25, 50, 50, GL_RED);
+                gl_draw_box(gl_get_width()*3/4 - BOX_WIDTH/2, 260 + gl_get_char_height() + 25, BOX_WIDTH, BOX_FEET_RADIUS, colors[p->color_num]);
+           } else {  
+                gl_draw_rect(3*gl_get_width()/4 - BALL_RADIUS, 260 + gl_get_char_height() + 25, 50, 50, GL_RED);
+                gl_draw_circle_sprite(3*gl_get_width()/4, 260 + gl_get_char_height() + 45, BALL_RADIUS, EYE_RADIUS, colors[p->color_num]);  
+           }
+        }
+        s->base_color = colors[p->color_num];
+    } 
+
+    if (controller_get_B(p->con_num) && controller_get_X(p->con_num)) {
+        s->sprite_num = 0;
+        if (p->con_num == 1) gl_draw_rect(gl_get_width()/4 - BALL_RADIUS, 260 + gl_get_char_height() + 25, 50, 50, GL_BLUE);
+        if (p->con_num == 2) gl_draw_rect(3*gl_get_width()/4 - BALL_RADIUS, 260 + gl_get_char_height() + 25, 50, 50, GL_RED);
+    }
+
     gl_draw_circle(s->x, s->y, 5, GL_BLACK);
-    color_t curr = color;
-    if (s->base_color != 0) curr = s->base_color;
-    gl_draw_circle(s->x, s->y, 4, curr);
+    gl_draw_circle(s->x, s->y, 4, color);
 }
 
 void make_platforms(int x, int y, int width, int height, color_t color) {
@@ -183,9 +238,15 @@ int should_draw_platform(sprite platform) {
 }
 
 void make_sprite(int p_num, int sprite_number, int x_start, int y_start, int direc) {
+    int sprite_height = BOX_HEIGHT + BOX_FEET_RADIUS + 5;
+    int sprite_width = BOX_WIDTH;
+    if (sprite_number == BALL) {
+        sprite_height = BALL_RADIUS * 2 + 5;
+        sprite_width = BALL_RADIUS * 2;
+    }
     sprite* player = &sprites[p_num - 1];
-    player->x = x_start;
-    player->y = y_start;
+    player->x = x_start - sprite_width;
+    player->y = y_start - sprite_height;
     player->is_grounded = 1;
     player->is_jumping = 0;
     
@@ -205,24 +266,28 @@ void make_sprite(int p_num, int sprite_number, int x_start, int y_start, int dir
     player->vel_y = 0;
     player->color = player->base_color;
     if (sprite_number == BOX) {
-        player->sprite_num = BOX; 
         player->hit_points = 100; 
         player->hit_x_left = player->x;
         player->hit_x_right = player->x + BOX_WIDTH;
         player->hit_y_top = player->y;
         player->hit_y_bottom = player->y + BOX_WIDTH + BOX_FEET_RADIUS;
+        player->height = BOX_HEIGHT + BOX_FEET_RADIUS;
     } else if (sprite_number == BALL) {
-        player->sprite_num = BALL; 
         player->hit_points = 100;
         player->hit_x_left = player->x - BALL_RADIUS;
         player->hit_x_right = player->x + BALL_RADIUS;
         player->hit_y_top = player->y - BALL_RADIUS;
         player->hit_y_bottom = player->y + BALL_RADIUS;
+        player->height = BALL_RADIUS * 2;
     }
 }
 
 void main(void)
 {
+    uart_init();
+    timer_init();
+    gl_init(_WIDTH, _HEIGHT, GL_DOUBLEBUFFER);
+    controller_init(21, 20);
     while (1) {
         gameplay_init();
         play_game(); 
@@ -265,7 +330,7 @@ void play_game(void) {
         }
         player_move(sprites);
         redraw_platforms();
-        if (p1.sprite->hit_points == 0 || p2.sprite->hit_points == 0) {
+        if (p1.sprite->hit_points <= 0 || p2.sprite->hit_points <= 0) {
             end_game();
             break;
         }
@@ -318,6 +383,7 @@ void update(player p) {
     } else if (p.sprite->proj_cooldown > 0) {
         p.sprite->proj_cooldown--;
     }
+
     if ((controller_get_X(p.con_num) || controller_get_JOYSTICK_Y(p.con_num) == 119) 
             && p.sprite->is_grounded == 1) {
         player_jump(p.sprite);
@@ -341,16 +407,16 @@ void update(player p) {
 void update_menu(player p) {
     controller_poll(p.con_num);
     if (controller_get_JOYSTICK_X(p.con_num) == 119) {
-        p.sprite->vel_x = 2;
+        p.sprite->vel_x = 5;
     } else if (controller_get_JOYSTICK_X(p.con_num) == 8) {
-        p.sprite->vel_x = -2;
+        p.sprite->vel_x = -5;
     } else {
         p.sprite->vel_x = 0;
     }
     if (controller_get_JOYSTICK_Y(p.con_num) == 119) {
-        p.sprite->vel_y = -2;
+        p.sprite->vel_y = -5;
     } else if (controller_get_JOYSTICK_Y(p.con_num) == 8) {
-        p.sprite->vel_y = 2;
+        p.sprite->vel_y = 5;
     } else {
         p.sprite->vel_y = 0;
     }

@@ -6,6 +6,7 @@
 typedef struct {
     sprite* sprite;
     int con_num;
+    int color_num;
 } player;
 
 typedef enum {
@@ -18,7 +19,7 @@ typedef enum {
 } box;
 
 typedef enum {
-    BALL_RADIUS = 10,
+    BALL_RADIUS = 20,
     //EYE RADIUS SHOULD BE 1/5 OF BALL RADIUS
     EYE_RADIUS = 2,
 } ball;

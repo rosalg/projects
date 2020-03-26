@@ -65,7 +65,7 @@ void player_draw_sprites(sprite* _sprite);
  * @param circle_r  the radius of the ball
   @param eye_r  the radius of the eye
  */
-void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r);
+void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r, color_t color);
 
 /*
  * Draw the box sprite, one blue rectangle with wheels

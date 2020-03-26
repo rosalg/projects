@@ -31,7 +31,7 @@ void player_jump(sprite* _sprite) {
 
 void player_move(sprite sprites[30]) {
     for (int i = 0; i < gameplay_get_sprite_count(); i++) {
-        if (sprites[i].hit_x_right + sprites[i].vel_x <= gl_get_width() && sprites[i].x + sprites[i].vel_x >= 0) {
+        if (sprites[i].hit_x_right + sprites[i].vel_x <= gl_get_width() && sprites[i].hit_x_left + sprites[i].vel_x >= 0) {
             sprites[i].x += sprites[i].vel_x;
             sprites[i].y += sprites[i].vel_y;
             update_hit_box(&sprites[i]);
@@ -82,7 +82,7 @@ void player_projectile(sprite* p_sprite, sprite* projectile){
         projectile->vel_x = 20;
         projectile->direction = RIGHT;
     } else {
-        projectile->x = p_sprite->hit_x_left + FIREBALL_RADIUS * 2;
+        projectile->x = p_sprite->hit_x_left - FIREBALL_RADIUS * 2;
         projectile->vel_x = -20;
         projectile->direction = LEFT;
     }
@@ -140,18 +140,18 @@ int punch_hit(sprite* p_sprite, sprite* target){
 
 void player_draw_sprites(sprite* _sprite){ //Draw and move the sprites
     if ((_sprite->hit_x_right <= gl_get_width() && _sprite->hit_x_left >= 0 && _sprite->hit != 1)){ 
-        if(_sprite->sprite_num == BOX){
-            gl_draw_box(_sprite->x, _sprite->y, BOX_WIDTH, BOX_FEET_RADIUS, _sprite->color); //Draw the box
-            if (_sprite->is_punching >= 2 * PUNCH_COOLDOWN / 3) {
-                if (_sprite->direction == RIGHT) {
-                    gl_draw_rect(_sprite->hit_x_right, _sprite->hit_y_top + BOX_HEIGHT/4, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, _sprite->base_color);
-                } else {  
-                    gl_draw_rect(_sprite->hit_x_left - BOX_ARM_WIDTH, _sprite->hit_y_top + BOX_HEIGHT/4, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, _sprite->base_color);
+        if (_sprite->is_punching >= 2 * PUNCH_COOLDOWN / 3 && _sprite->sprite_num != FIRE) {
+            if (_sprite->direction == RIGHT) {
+                        gl_draw_rect(_sprite->hit_x_right, _sprite->hit_y_top + _sprite->height/2 - BOX_ARM_HEIGHT/2, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, _sprite->base_color);
+                    } else {  
+                        gl_draw_rect(_sprite->hit_x_left - BOX_ARM_WIDTH, _sprite->hit_y_top + _sprite->height/2 - BOX_ARM_HEIGHT/2, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, _sprite->base_color);
                 }
             }
+        if(_sprite->sprite_num == BOX){
+            gl_draw_box(_sprite->x, _sprite->y, BOX_WIDTH, BOX_FEET_RADIUS, _sprite->color); //Draw the box 
         } 
         else if (_sprite->sprite_num == BALL) {  
-            gl_draw_circle_sprite(_sprite->x, _sprite->y, BALL_RADIUS, EYE_RADIUS);
+            gl_draw_circle_sprite(_sprite->x, _sprite->y, BALL_RADIUS, EYE_RADIUS, _sprite->color);
         }
         else if (_sprite->sprite_num == FIRE) {
             gl_draw_circle(_sprite->x, _sprite->y, FIREBALL_RADIUS, GL_RED);
@@ -161,9 +161,9 @@ void player_draw_sprites(sprite* _sprite){ //Draw and move the sprites
             _sprite->owner->is_firing = 0;
             gl_swap_buffer();
             if (_sprite->direction == RIGHT) {
-                gl_draw_rect(_sprite->x - FIREBALL_RADIUS * 3, _sprite->y - FIREBALL_RADIUS, (FIREBALL_RADIUS * 2) + 1, (FIREBALL_RADIUS * 2) + 1, GL_BLACK);
+                gl_draw_rect(_sprite->x - _sprite->vel_x - FIREBALL_RADIUS, _sprite->y - FIREBALL_RADIUS, (FIREBALL_RADIUS * 2) + 1, (FIREBALL_RADIUS * 2) + 1, GL_BLACK);
             } else { 
-                gl_draw_rect(_sprite->x + FIREBALL_RADIUS, _sprite->y - FIREBALL_RADIUS, (FIREBALL_RADIUS * 2) + 1, (FIREBALL_RADIUS * 2) + 1, GL_BLACK);
+                gl_draw_rect(_sprite->x - _sprite->vel_x - FIREBALL_RADIUS, _sprite->y - FIREBALL_RADIUS, (FIREBALL_RADIUS * 2) + 1, (FIREBALL_RADIUS * 2) + 1, GL_BLACK);
             }
             _sprite->x = 0;
             _sprite->y = 0;
@@ -175,13 +175,12 @@ void player_draw_sprites(sprite* _sprite){ //Draw and move the sprites
 }
 
 void player_erase_sprites(sprite* _sprite) {
+    if (_sprite->sprite_num != FIRE) {
+        gl_draw_rect(_sprite->hit_x_left - _sprite->vel_x - BOX_ARM_WIDTH, _sprite->hit_y_top - _sprite->vel_y + _sprite->height/2 - BOX_ARM_HEIGHT/2, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, GL_BLACK);
+        gl_draw_rect(_sprite->hit_x_right - _sprite->vel_x, _sprite->hit_y_top - _sprite->vel_y + _sprite->height/2 - BOX_ARM_HEIGHT/2, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, GL_BLACK);
+    }
     if (_sprite->sprite_num == BOX) {
         gl_draw_rect(_sprite->x - _sprite->vel_x, _sprite->y - _sprite->vel_y, BOX_WIDTH + BOX_FEET_RADIUS+1, BOX_WIDTH + BOX_FEET_RADIUS + 1, GL_BLACK);
-        //if (_sprite->direction == LEFT) { 
-                gl_draw_rect(_sprite->hit_x_left - _sprite->vel_x - BOX_ARM_WIDTH, _sprite->hit_y_top - _sprite->vel_y + BOX_HEIGHT/4, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, GL_BLACK);
-        //} else {
-                gl_draw_rect(_sprite->hit_x_right - _sprite->vel_x, _sprite->hit_y_top - _sprite->vel_y + BOX_HEIGHT/4, BOX_ARM_WIDTH, BOX_ARM_HEIGHT, GL_BLACK);
-        //}
     } else if (_sprite->sprite_num == BALL) { 
         gl_draw_rect(_sprite->x - _sprite->vel_x - BALL_RADIUS, _sprite->y - _sprite->vel_y - BALL_RADIUS, BALL_RADIUS * 2 + 1, BALL_RADIUS * 2 + 1, GL_BLACK);
     } else if (_sprite->sprite_num == FIRE) {
@@ -189,10 +188,10 @@ void player_erase_sprites(sprite* _sprite) {
     }
 }
 
-void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r){
-    gl_draw_circle(x, y, circle_r, GL_YELLOW);
-    gl_draw_circle(x - 15, y - 15, eye_r, GL_BLACK);
-    gl_draw_circle(x + 15, y - 15, eye_r, GL_BLACK);
+void gl_draw_circle_sprite(int x, int y, int circle_r, int eye_r, color_t color){
+    gl_draw_circle(x, y, circle_r, color);
+    gl_draw_circle(x - BALL_RADIUS/2, y - BALL_RADIUS/2, eye_r, GL_BLACK);
+    gl_draw_circle(x + BALL_RADIUS/2, y - BALL_RADIUS/2, eye_r, GL_BLACK);
 }
 
 void gl_draw_box(int x, int y, int box_r, int wheel_r, color_t color){

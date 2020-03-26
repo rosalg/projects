@@ -53,13 +53,13 @@ int any_sprite_is_moving(void);
 
 int should_draw_platform(sprite platform);
 
-void redraw_platforms();
+void redraw_platforms(void);
 
-void draw_cursor(player p, color_t color);
+void draw_cursor(player* p, color_t color);
 
 void update_menu(player p);
 
-void color_select();
+void character_select(void);
 
 void update_punch(player p);
 
