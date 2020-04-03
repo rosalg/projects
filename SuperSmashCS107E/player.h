@@ -4,6 +4,12 @@
 #include <stdarg.h>
 #include "gl_kyl.h"
 
+/* 
+ * sprite struct containing ALL information about a sprite, like location, velocity, whether it is jumping
+ * or grounded, whether it is shielding and for how long, whether the character is knockbacked and for
+ * how long, whether the sprite is punching, information about the projectile the character fires, hitboxes,
+ * and sprite number for different sprites..
+ */
 typedef struct sprite {
     int x;
     int y;
@@ -38,33 +44,32 @@ typedef struct sprite {
     struct sprite* owner;
 }sprite;
 
+/*
+ * Sprite nums enum for redrawing. Based on which sprite number the player's sprite has, the GPU will redraw
+ * the sprite shape.
+ */
 typedef enum {
     BOX = 1,
     BALL = 2,
     FIRE = 3,
 } sprite_nums;
 
+/*
+ * Enums for directions the sprite is facing. Affects punch direction and shot direction.
+ */
 typedef enum {
     LEFT = -1,
     RIGHT = 1,
     NONE = 0,
 } directions;
 
-//void player_init(sprite* player);
-
 void player_init(int n, ...);
-
-//void player_move(sprite* player, int x, int y);
 
 void player_move(sprite sprites[30]);
 
 void player_jump(sprite* _sprite);
 
 void player_erase_sprites(sprite* _sprites);
-
-//void update_hit_box(sprite* player, int x, int y);
-
-sprite* player_get_players();
 
 void update_hit_box(sprite* _sprite);
 

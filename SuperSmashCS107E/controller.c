@@ -7,8 +7,11 @@
 #include "ringbuffer.h"
 #include "controller.h"
 
+// Static variable to indicate which data pins the user is using on the Raspberry Pi
 static unsigned int DATA_1;
 static unsigned int DATA_2;
+
+// Static variable to indicate byte by byte information for each gamecube controller
 static unsigned int bytes_1[64];
 static unsigned int bytes_2[64];
 
