@@ -63,10 +63,10 @@ public class PlayableCharacter extends GraphicsProgram implements BodyConstants{
 	private double rangedAttackCounter = 5;
 	private RangedAttackProjectile projectile;
 	
-	AudioClip punch = MediaTools.loadAudioClip("punch.au");
-	AudioClip missedPunch = MediaTools.loadAudioClip("missedPunch.au");
-	AudioClip jump = MediaTools.loadAudioClip("jump.wav");
-	AudioClip hit = MediaTools.loadAudioClip("hit.wav");
+	AudioClip punch = MediaTools.loadAudioClip("assets/audio/punch.au");
+	AudioClip missedPunch = MediaTools.loadAudioClip("assets/audio/missedPunch.au");
+	AudioClip jump = MediaTools.loadAudioClip("assets/audio/jump.wav");
+	AudioClip hit = MediaTools.loadAudioClip("assets/audio/hit.wav");
 	
  	public GCompound getCharacterModel(int modelNumber) {
 		if (modelNumber == STATIONARY_MODEL) {

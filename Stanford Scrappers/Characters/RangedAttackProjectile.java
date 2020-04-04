@@ -26,7 +26,7 @@ public class RangedAttackProjectile extends GraphicsProgram {
 	private GOval projectile;
 	private double r = 5;
 	private int checkBallOut;
-	AudioClip hit = MediaTools.loadAudioClip("hit.wav");
+	AudioClip hit = MediaTools.loadAudioClip("assets/audio/hit.wav");
 	
 	public RangedAttackProjectile(Color color) {
 		projectile = new GOval(r*2, r*2);
