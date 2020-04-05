@@ -63,25 +63,96 @@ typedef enum {
     NONE = 0,
 } directions;
 
+/*
+ *  This function draws the initial player sprites to the doubleBuffered framebuffer.
+ *
+ *  PARAMETERS
+ *  n - The number of players in the game.
+ *  ... - A variadic number of sprite pointers, where each sprite is the sprite of a player.
+ */
 void player_init(int n, ...);
 
+/*
+ *  Function that moves each player simultaneously based on vel_x and vel_y. It also moves any projectiles fired,
+ *  checking for collisions.
+ *
+ *  PARAMETERS
+ *  sprites[30] - array in gameplay implementation that contains information about each sprite
+ *  (WITH A MAX OF 30 SPRITES)
+ */
 void player_move(sprite sprites[30]);
 
+/*
+ *  Function takes a pointer to a sprite and makes that sprite jump by changing its vel_y and updating
+ *  its is grounded and is_jumping variables.
+ *
+ *  PARAMETERS
+ *  _sprite - The sprite you want to jump.
+ */
 void player_jump(sprite* _sprite);
 
-void player_erase_sprites(sprite* _sprites);
+/*
+ *  Function that erases sprite on the hidden buffer.
+ *
+ *  PARAMETERS
+ *  _sprite - Sprite you want to erase
+ */
+void player_erase_sprites(sprite* _sprite);
 
+/*
+ *  Helper function that updates the hitbox of _sprite.
+ *
+ *  PARAMETERS
+ *  _sprite - sprite that contains hitbox you want to update
+ */
 void update_hit_box(sprite* _sprite);
 
+/*
+ *  Make p_sprite shoot projectile
+ *
+ *  PARAMETERS
+ *  p_sprite - player_sprite: The sprite of player that you want to shoot.
+ *  projectile - The sprite you want to treat as the projectile.
+ */
 void player_projectile(sprite* p_sprite, sprite* projectile);
 
-//See if the projectiles on screen have impacted any sprites
+/*
+ *  Check whether projectile hit target by comparing hitboxes.
+ *
+ *  PARAMETERS
+ *  target - pointer to target sprite
+ *  projectile - pointer to projectile sprite that you want to check for collision
+ */
 int projectile_hit(sprite* target, sprite* projectile);
 
+/*
+ *  Check if p_sprite hit target_sprite, drawing a fist to represent a punch.
+ *
+ *  PARAMETERS
+ *  p_sprite - player_sprite: The sprite of player you want punching
+ *  target_sprite - The sprite of player you want to check for getting punched.
+ */
 int player_punch(sprite* p_sprite, sprite* target_sprite);
 
+/*
+ *  Helper function that registers whether p_sprite hit target_sprite by checking hitboxes.
+ *
+ *  PARAMETERS
+ *  p_sprite - player_sprite: The sprite of player you want punching
+ *  target_sprite - The sprite of player you want to check for getting punched.
+ */
 int punch_hit(sprite* p_sprite, sprite* target_sprite);
 
+/*
+ * Helper function that redrew each player's healthbars.
+ *
+ *  PARAMETERS
+ *  x - x_pos of health_bar for p1
+ *  y - y_pos of health_bar for p1
+ *  x2 - x_pos of health_bar for p2
+ *  y2 - y_pos of health_bar for p2
+ *  _sprite - sprite that was hit
+ */
 void player_redraw_health_bar(int x, int y, int x2, int y2, sprite _sprite);
 
 #endif

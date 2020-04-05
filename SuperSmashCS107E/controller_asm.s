@@ -41,7 +41,7 @@ controller_asm_write:
     
     bx lr
     
-    
+//Sends a low bit that is interpreted by the GameCube. Low bits stay low for 3us, then go high for 1us.    
 low_pulse:
 
     ldr r0, CLR0
@@ -63,6 +63,7 @@ low_pulse:
 
     mov pc, r2
 
+// Sends a high bit that is interpreted by the GameCube. High bits stay low for 1us, then go high for 3us.
 high_pulse:
     ldr r0, CLR0
     mov r1, #(3 << 20)
