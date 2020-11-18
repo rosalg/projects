@@ -23,7 +23,7 @@ Lastly, the Characters folder contains the modules for firing a projectile and t
 
 2. Coin 
 
-This project is made up of the Assets, Packages, and Project Settings folders. The game, titled Coin, is a single-player puzzle app developed using C# and Unity2D that has mirror reflections of the sprite that both move when one moves, but are faced with a different set of obstacles. The player must get both sprites to an exit at the same time. This game is in the midst of development, containing 10 levels, a self-made soundtrack, and self-made artwork. The goal for initial release is 30 levels.
+This project is made up of the Assets, Packages, and Project Settings folders. The game, titled Coin, is a single-player puzzle app developed using C# and Unity2D that has mirror reflections of the sprite that both move when one moves, but are faced with a different set of obstacles. The player must get both sprites to an exit at the same time. This game is in the midst of development, containing 45 levels, a self-made soundtrack, and self-made artwork.
 
 The Assets folder contain self-describing folders, as well as scripts for the game in C#. The scripts are labelled to correspond with
 what each script manages. The only script I did NOT make myself was the CharacterController2D, however I made modifications of my own
